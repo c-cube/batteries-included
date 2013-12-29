@@ -386,6 +386,16 @@ module Monad = struct
     let acc = Acc.dummy() in
     bind l f acc;
     acc.tl
+
+  (*$T
+    (Monad.bind [1;2;3] (fun x -> [x; x*2])) = [1;2;2;4;3;6]
+   *)
+
+  (*$Q
+    (Q.list_of_size (fun () -> 5) (Q.list Q.small_int)) \
+      (fun l -> Monad.bind l identity = flatten l)
+    (Q.list Q.small_int) (fun l -> l = Monad.bind l Monad.return)
+  *)
 end
 
 (*$= interleave & ~printer:(IO.to_string (List.print Int.print))
