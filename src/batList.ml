@@ -367,6 +367,27 @@ let interleave ?first ?last (sep:'a) (l:'a list) =
   | (h::t, None,   Some y)     -> rev_append (aux [h] t) [y]
   | (h::t, Some x, Some y)     -> x::rev_append (aux [h] t) [y]
 
+module Monad = struct
+  type 'a m = 'a list
+
+  let return x = [x]
+
+  let bind l f =
+    let rec bind l f acc = match l with
+      | [] -> ()
+      | x::l' ->
+          let xs = f x in
+          let acc = _append xs acc in
+          bind l' f acc
+    and _append l acc = match l with
+      | [] -> acc
+      | x::l' -> _append l' (Acc.accum acc x)
+    in
+    let acc = Acc.dummy() in
+    bind l f acc;
+    acc.tl
+end
+
 (*$= interleave & ~printer:(IO.to_string (List.print Int.print))
   (interleave 0 [1;2;3]) [1;0;2;0;3]
   (interleave 0 [1]) [1]
