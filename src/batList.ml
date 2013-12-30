@@ -398,6 +398,34 @@ module Monad = struct
   *)
 end
 
+module Traverse(M : BatInterfaces.Monad) = struct
+  type 'a t = 'a list
+
+  type 'a m = 'a M.m
+
+  let (>>=) = M.bind
+
+  let rec sequence l = match l with
+    | [] -> M.return []
+    | xs::l' ->
+      xs >>= fun x ->
+      sequence l' >>= fun l' ->
+      M.return (x :: l')
+
+  let rec mapM f l = match l with
+    | [] -> M.return []
+    | x::l' ->
+      mapM f l' >>= fun l' ->
+      f x >>= fun x ->
+      M.return (x::l')
+
+  let rec foldM f acc l = match l with
+    | [] -> M.return acc
+    | x::l' ->
+      f acc x >>= fun acc' ->
+      foldM f acc' l'
+end
+
 (*$= interleave & ~printer:(IO.to_string (List.print Int.print))
   (interleave 0 [1;2;3]) [1;0;2;0;3]
   (interleave 0 [1]) [1]
