@@ -85,3 +85,22 @@ module type Monad = sig
   val return: 'a -> 'a m
 
 end
+
+(** Traversable structures allow one to traverse a structure, with a monadic
+    function *)
+module type Traversable = sig
+  type 'a t
+  (** Traversable *)
+
+  type 'a m
+  (** Monad *)
+
+  val sequence : 'a m t -> 'a t m
+  (** Basic building block for other functions *)
+
+  val mapM : ('a -> 'b m) -> 'a t -> 'b t m
+  (** Map each element to a monadic value *)
+
+  val foldM : ('a -> 'b -> 'a m) -> 'a -> 'b t -> 'a m
+  (** Fold on elements of the traversable structure *)
+end

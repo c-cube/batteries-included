@@ -34,3 +34,13 @@ module type Monad = sig
   val bind : 'a m -> ('a -> 'b m) -> 'b m
   val return: 'a -> 'a m
 end
+
+module type Traversable = sig
+  type 'a t
+
+  type 'a m
+
+  val sequence : 'a m t -> 'a t m
+  val mapM : ('a -> 'b m) -> 'a t -> 'b t m
+  val foldM : ('a -> 'b -> 'a m) -> 'a -> 'b t -> 'a m
+end
