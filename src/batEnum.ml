@@ -1251,7 +1251,46 @@ let rec of_object o =
 
 let flatten = concat
 
-let concat_map f e = concat (map f e)
+module ConcatMap = struct
+  type ('a,'b) state = {
+    mutable cur : 'b t;
+    mutable next_input : 'a t;
+  }
+end
+
+let concat_map f e =
+  let open ConcatMap in
+  let rec next state () =
+    try state.cur.next ()
+    with No_more_elements ->
+      let x = state.next_input.next () in
+      state.cur <- f x;
+      next state ()
+  in
+  let rec make state =
+    { next=next state; clone=clone state; count=count state; fast=false; }
+  and count state () =
+    let e = clone state () in
+    fold (fun acc _ -> acc+1) 0 e
+  and clone state () =
+    let state' = {cur=state.cur.clone(); next_input=state.next_input.clone(); } in
+    make state'
+  in
+  make {cur=empty (); next_input=e;}
+
+(*$T concat_map
+  (1 -- 10 |> concat_map (fun x -> List.enum [x;-x]) |> sum) = 0
+  let e = (1 -- 10 |> concat_map (fun x -> List.enum [x;-x])) in \
+    Enum.count e = (List.of_enum e |> List.length)
+  let e = (1 -- 10 |> concat_map (fun x -> List.enum [x;-x])) in \
+    Enum.count e = 20
+*)
+
+(*$Q concat_map
+  Q.small_int (fun i -> \
+    let i = abs i in \
+    equal (=) (0 -- i) (concat_map singleton (0 -- i)))
+ *)
 
 module Exceptionless = struct
   let find f e =
@@ -1339,7 +1378,7 @@ module Monad =
 struct
   type 'a m = 'a t
   let return x = singleton x
-  let bind m f = concat (map f m)
+  let bind m f = concat_map f m
 end
 
 module Incubator = struct
