@@ -40,6 +40,7 @@ TARGETS += src/batteriesHelp.cmo
 TARGETS += src/batteriesThread.cma
 TARGETS += META
 BENCH_TARGETS  = benchsuite/bench_int.native
+BENCH_TARGETS  = benchsuite/bench_concat_map.native
 BENCH_TARGETS += benchsuite/flip.native
 BENCH_TARGETS += benchsuite/deque.native
 BENCH_TARGETS += benchsuite/lines_of.native
