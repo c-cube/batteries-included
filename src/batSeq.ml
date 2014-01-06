@@ -290,6 +290,37 @@ let print ?(first="[") ?(last="]") ?(sep="; ") print_a out s = match s () with
       iter (BatPrintf.fprintf out "%s%a" sep print_a) s;
       BatInnerIO.nwrite out last
 
+let concat_map f e = concat (map f e)
+
+module Monad = struct
+  type 'a m = 'a t
+  let return x = cons x nil
+  let bind x f = concat_map f x
+end
+
+module Traverse(M : BatInterfaces.Monad) = struct
+  type 'a t = 'a mappable
+  type 'a m = 'a M.m
+
+  let (>>=) = M.bind
+
+  let rec mapM f e = match e () with
+    | Nil -> M.return nil
+    | Cons (x, e') ->
+      f x >>= fun x ->
+      mapM f e' >>= fun e' ->
+      M.return (cons x e')
+
+  let sequence m = mapM (fun x -> x) m
+
+  let rec foldM f acc e = match e () with
+    | Nil -> M.return acc
+    | Cons (x, e') ->
+      f acc x >>= fun acc ->
+      foldM f acc e'
+end
+
+
 module Infix = struct
   (** Infix operators matching those provided by {!BatEnum.Infix} *)
 
