@@ -321,6 +321,38 @@ let concat lol =
   ignore (concat (lazy (Cons ((let () = failwith "foo" in nil), nil)))); true
 *)
 
+(** {6 Monad} *)
+
+let concat_map f l = map f l |> concat
+
+module Monad = struct
+  type 'a m = 'a t
+  let return x = cons x nil
+  let bind x f = concat_map f x
+end
+
+module Traverse(M : BatInterfaces.Monad) = struct
+  type 'a t = 'a mappable
+  type 'a m = 'a M.m
+
+  let (>>=) = M.bind
+
+  let rec mapM f l = match l with
+    | lazy Nil -> M.return nil
+    | lazy (Cons (x,l')) ->
+      f x >>= fun x ->
+      mapM f l' >>= fun l' ->
+      M.return (cons x l')
+
+  let sequence l = mapM (fun x -> x) l
+
+  let rec foldM f acc l = match l with
+    | lazy Nil -> M.return acc
+    | lazy (Cons (x, l')) ->
+      f acc x >>= fun acc ->
+      foldM f acc l'
+end
+
 (**
    {6  Conversions}
 *)
