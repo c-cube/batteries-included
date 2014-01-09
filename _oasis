@@ -14,6 +14,10 @@ XCustomBuild: $make all
 XCustomInstall: $make install
 XCustomUninstall: $make uninstall
 
+Flag "lwt"
+  Description:  Enable Lwt support
+  Default:      false
+
 Document manual
   Type: custom (0.2)
   Title: Ocaml Batteries Documentation
@@ -32,3 +36,11 @@ SourceRepository master
 Library "batteries"
   Path: src/
 
+Library "batteries_lwt"
+  Path:             src/
+  Modules:          BatLwt
+  FindlibName:      lwt
+  FindlibParent:    batteries
+  Build$:           flag(lwt)
+  BuildDepends:     batteries,lwt,lwt.unix
+  XMETARequires:    batteries,lwt,lwt.unix
