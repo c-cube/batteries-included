@@ -1197,7 +1197,7 @@ struct
      version will still be problematic but at least the result will
      be consistent." *)
 
-  let mapM f enum =
+  let map_m f enum =
     let of_acc acc = MicroList.enum (List.rev acc)
     in
     let rec loop acc = match get enum with
@@ -1208,9 +1208,9 @@ struct
     in
     loop []
 
-  let sequence e = mapM (fun x -> x) e
+  let sequence e = map_m (fun x -> x) e
 
-  let foldM = fold_monad
+  let fold_m = fold_monad
 end
 
 module Monad =

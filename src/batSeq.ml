@@ -304,20 +304,20 @@ module Traverse(M : BatInterfaces.Monad) = struct
 
   let (>>=) = M.bind
 
-  let rec mapM f e = match e () with
+  let rec map_m f e = match e () with
     | Nil -> M.return nil
     | Cons (x, e') ->
       f x >>= fun x ->
-      mapM f e' >>= fun e' ->
+      map_m f e' >>= fun e' ->
       M.return (cons x e')
 
-  let sequence m = mapM (fun x -> x) m
+  let sequence m = map_m (fun x -> x) m
 
-  let rec foldM f acc e = match e () with
+  let rec fold_m f acc e = match e () with
     | Nil -> M.return acc
     | Cons (x, e') ->
       f acc x >>= fun acc ->
-      foldM f acc e'
+      fold_m f acc e'
 end
 
 

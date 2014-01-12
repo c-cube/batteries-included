@@ -95,17 +95,17 @@ module type Traversable = sig
   type 'a m
   (** Monad *)
 
-  val mapM : ('a -> 'b m) -> 'a t -> 'b t m
+  val map_m : ('a -> 'b m) -> 'a t -> 'b t m
   (** Map each element to a value by a monadic action, and combine results
       together in the monad. *)
 
-  val foldM : ('a -> 'b -> 'a m) -> 'a -> 'b t -> 'a m
+  val fold_m : ('a -> 'b -> 'a m) -> 'a -> 'b t -> 'a m
   (** Fold on elements of the traversable structure, applying a monadic
       action to obtain the next accumulator from the current accumulator
       and element. *)
 
   val sequence : 'a m t -> 'a t m
   (** Basic building block for other functions. [sequence x] is similar
-      to [mapM identity x]. *)
+      to [map_m identity x]. *)
 
 end

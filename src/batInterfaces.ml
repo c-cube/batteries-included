@@ -40,7 +40,7 @@ module type Traversable = sig
 
   type 'a m
 
-  val mapM : ('a -> 'b m) -> 'a t -> 'b t m
-  val foldM : ('a -> 'b -> 'a m) -> 'a -> 'b t -> 'a m
+  val map_m : ('a -> 'b m) -> 'a t -> 'b t m
+  val fold_m : ('a -> 'b -> 'a m) -> 'a -> 'b t -> 'a m
   val sequence : 'a m t -> 'a t m
 end
