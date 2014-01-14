@@ -13,7 +13,7 @@ export DOCROOT
 BROWSER_COMMAND ?= x-www-browser
 export BROWSER_COMMAND
 
-OCAMLBUILD ?= ocamlbuild
+OCAMLBUILD ?= ocamlbuild -use-ocamlfind
 OCAMLBUILDFLAGS ?= -no-links
 
 ifeq ($(uname_S),Darwin)
@@ -23,6 +23,8 @@ else
   BATTERIES_NATIVE ?= yes
   BATTERIES_NATIVE_SHLIB ?= $(BATTERIES_NATIVE)
 endif
+
+ENABLE_FILEUTILS = $(grep 'fileutils="true"' setup.data 2>/dev/null || echo not)
 
 # Directory where to build the qtest suite
 QTESTDIR ?= qtest
@@ -63,6 +65,13 @@ else
   EXT = byte
   MODE = bytecode
 endif
+endif
+
+ifneq (${ENABLE_FILEUTILS},not)
+  TARGETS += src/batteriesFile.cma
+  ifeq (${BATTERIES_NATIVE},yes)
+      TARGETS += src/batteriesFile.cmxa
+  endif
 endif
 
 PREPROCESSED_FILES = src/batMarshal.mli src/batUnix.mli src/batPervasives.mli \

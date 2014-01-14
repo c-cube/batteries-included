@@ -14,6 +14,10 @@ XCustomBuild: $make all
 XCustomInstall: $make install
 XCustomUninstall: $make uninstall
 
+Flag fileutils
+  Description:      Enable sub-library that interfaces to FileUtils
+  Default:          false
+
 Document manual
   Type: custom (0.2)
   Title: Ocaml Batteries Documentation
