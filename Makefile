@@ -68,9 +68,9 @@ endif
 endif
 
 ifneq (${ENABLE_FILEUTILS},not)
-  TARGETS += src/batteriesFile.cma
+  TARGETS += src/batteriesFileUtils.cma
   ifeq (${BATTERIES_NATIVE},yes)
-      TARGETS += src/batteriesFile.cmxa
+      TARGETS += src/batteriesFileUtils.cmxa
   endif
 endif
 
