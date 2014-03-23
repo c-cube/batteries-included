@@ -404,3 +404,7 @@ end
 let from (src:'a UniversalSource.t) (sink:'b Sink.t) (x:'a) : 'b =
   src.UniversalSource.visit sink x
 
+let from_opt src sink x =
+  try Some (from src sink x)
+  with ConversionFailure _ -> None
+

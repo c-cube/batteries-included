@@ -911,64 +911,61 @@ let print_quoted out s = BatInnerIO.nwrite out (quote s)
 let source = BatConv.Source.string_
 let sink = BatConv.Sink.string_
 
-module Exceptionless =
-struct
-  let find_from str ofs sub =
-    try Some (find_from str ofs sub) with Not_found -> None
+let find_from_opt str ofs sub =
+  try Some (find_from str ofs sub) with Not_found -> None
 
-  let find str sub = find_from str 0 sub
-  (*$T
-    Exceptionless.find "a" "b" = None
-  *)
+let find_opt str sub = find_from_opt str 0 sub
+(*$T
+  find_opt "a" "b" = None
+*)
 
-  let rfind_from str suf sub =
-    try Some (rfind_from str suf sub) with Not_found -> None
+let rfind_from_opt str suf sub =
+  try Some (rfind_from str suf sub) with Not_found -> None
 
-  let rfind str sub = rfind_from str (String.length str - 1) sub
-  (*$T
-    Exceptionless.rfind "a" "b" = None
-  *)
+let rfind_opt str sub = rfind_from_opt str (String.length str - 1) sub
+(*$T
+  rfind_opt "a" "b" = None
+*)
 
-  let to_int s = try Some (to_int s) with Failure _ -> None
-  (*$T
-    Exceptionless.to_int "" = None
-  *)
+let to_int_opt s = try Some (to_int s) with Failure _ -> None
+(*$T
+  to_int_opt "" = None
+*)
 
-  let to_float s = try Some (to_float s) with Failure _ -> None
-  (*$T
-    Exceptionless.to_float "" = None
-  *)
+let to_float_opt s = try Some (to_float s) with Failure _ -> None
+(*$T
+  to_float_opt "" = None
+*)
 
-  let index s c = try Some (index s c) with Not_found -> None
-  (*$T
-    Exceptionless.index "a" 'b' = None
-  *)
+let index_opt s c = try Some (index s c) with Not_found -> None
+(*$T
+  index_opt "a" 'b' = None
+*)
 
-  let index_from s i c = try Some (index_from s i c) with Not_found -> None
-  (*$T
-    Exceptionless.index_from "a" 0 'b' = None
-  *)
+let index_from_opt s i c = try Some (index_from s i c) with Not_found -> None
+(*$T
+  index_from_opt "a" 0 'b' = None
+*)
 
-  let rindex_from s i c = try Some (rindex_from s i c) with Not_found -> None
-  (*$T
-    Exceptionless.rindex_from "a" 0 'b' = None
-  *)
+let rindex_from_opt s i c = try Some (rindex_from s i c) with Not_found -> None
+(*$T
+  rindex_from_opt "a" 0 'b' = None
+*)
 
-  let rindex s c = try Some (rindex s c) with Not_found -> None
-  (*$T
-    Exceptionless.rindex "a" 'b' = None
-  *)
+let rindex_opt s c = try Some (rindex s c) with Not_found -> None
+(*$T
+  rindex_opt "a" 'b' = None
+*)
 
-  let split str ~by = try Some (split str ~by) with Not_found -> None
-  (*$T
-    Exceptionless.split "a" ~by:"e" = None
-  *)
+let split_opt str ~by = try Some (split str ~by) with Not_found -> None
+(*$T
+  split_opt "a" ~by:"e" = None
+*)
 
-  let rsplit str ~by = try Some (rsplit str ~by) with Not_found -> None
-  (*$T
-    Exceptionless.rsplit "a" ~by:"e" = None
-  *)
-end (* String.Exceptionless *)
+let rsplit_opt str ~by = try Some (rsplit str ~by) with Not_found -> None
+(*$T
+  rsplit_opt "a" ~by:"e" = None
+*)
 
 module Cap =
 struct
@@ -1064,20 +1061,17 @@ struct
   external unsafe_fill :
     [> `Write] t -> int -> int -> char -> unit = "caml_fill_string" "noalloc"
 
-  module Exceptionless =
-  struct
-    let find_from = Exceptionless.find_from
-    let find = Exceptionless.find
-    let rfind_from = Exceptionless.rfind_from
-    let rfind = Exceptionless.rfind
-    let to_int = Exceptionless.to_int
-    let to_float = Exceptionless.to_float
-    let index = Exceptionless.index
-    let index_from = Exceptionless.index_from
-    let rindex_from = Exceptionless.rindex_from
-    let rindex = Exceptionless.rindex
-    let split = Exceptionless.split
-    let rsplit = Exceptionless.rsplit
-  end (* String.Cap.Exceptionless *)
+  let find_from_opt = find_from_opt
+  let find_opt = find_opt
+  let rfind_from_opt = rfind_from_opt
+  let rfind_opt = rfind_opt
+  let to_int_opt = to_int_opt
+  let to_float_opt = to_float_opt
+  let index_opt = index_opt
+  let index_from_opt = index_from_opt
+  let rindex_from_opt = rindex_from_opt
+  let rindex_opt = rindex_opt
+  let split_opt = split_opt
+  let rsplit_opt = rsplit_opt
 
 end (* String.Cap *)

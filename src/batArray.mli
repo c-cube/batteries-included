@@ -533,18 +533,16 @@ val equal : 'a BatOrd.eq -> 'a array BatOrd.eq
 *)
 
 (** Operations on {!Array} without exceptions.*)
-module Exceptionless : sig
 
-  val find : ('a -> bool) -> 'a t -> 'a option
-  (** [find p a] returns [Some x], where [x] is the first element of
-    array [a] that satisfies the predicate [p], or [None] if there
-    is no such element.*)
+val find_opt : ('a -> bool) -> 'a t -> 'a option
+(** [find p a] returns [Some x], where [x] is the first element of
+  array [a] that satisfies the predicate [p], or [None] if there
+  is no such element.*)
 
-  val findi : ('a -> bool) -> 'a t -> int option
-    (** [findi p a] returns [Some n], where [n] is the index of the
-        first element of array [a] that satisfies the predicate [p],
-        or [None] if there is no such element.*)
-end
+val findi_opt : ('a -> bool) -> 'a t -> int option
+  (** [findi p a] returns [Some n], where [n] is the index of the
+      first element of array [a] that satisfies the predicate [p],
+      or [None] if there is no such element.*)
 
 (** Operations on {!Array} with labels.
 
@@ -584,10 +582,8 @@ module Labels : sig
   val mapi:       f:(int -> 'a -> 'b) -> 'a t -> 'b t
   val filter:     f:('a -> bool) -> 'a t -> 'a t
   val filter_map: f:('a -> 'b option) -> 'a t -> 'b t
-  module LExceptionless : sig
-    val find:       f:('a -> bool) -> 'a t -> 'a option
-    val findi:      f:('a -> bool) -> 'a t -> int option
-  end
+  val find_opt:       f:('a -> bool) -> 'a t -> 'a option
+  val findi_opt:      f:('a -> bool) -> 'a t -> int option
 end
 
 
@@ -719,11 +715,8 @@ sig
 
   (** {6 Override modules}*)
 
-  (** Operations on {!BatArray.Cap} without exceptions.*)
-  module Exceptionless : sig
-    val find : ('a -> bool) -> ('a, [> `Read]) t -> 'a option
-    val findi : ('a -> bool) -> ('a, [> `Read]) t -> int option
-  end
+  val find_opt : ('a -> bool) -> ('a, [> `Read]) t -> 'a option
+  val findi_opt : ('a -> bool) -> ('a, [> `Read]) t -> int option
 
   (** Operations on {!BatArray.Cap} with labels. *)
   module Labels : sig

@@ -178,5 +178,9 @@ val into : 'a Source.t -> 'b UniversalSink.t -> 'a -> 'b
   (** Conversion to universal sink *)
 
 val from : 'a UniversalSource.t -> 'b Sink.t -> 'a -> 'b
-  (** Conversion from universal source *)
+  (** Conversion from universal source
+      @raise ConversionFailure in case of mismatch. *)
+
+val from_opt : 'a UniversalSource.t -> 'b Sink.t -> 'a -> 'b option
+  (** Non-failing version of {!from} *)
 

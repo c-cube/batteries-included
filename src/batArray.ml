@@ -843,30 +843,25 @@ struct
     let filter_map ~f a = filter_map f a
   end
 
-  module Exceptionless =
-  struct
-    let find f e =
-      try Some (find f e)
-      with Not_found -> None
+  let find_opt f e =
+    try Some (find f e)
+    with Not_found -> None
 
-    let findi f e =
-      try Some (findi f e)
-      with Not_found -> None
-  end
+  let findi_opt f e =
+    try Some (findi f e)
+    with Not_found -> None
   (*BISECT-IGNORE-END*)
 end
 
 (*BISECT-IGNORE-BEGIN*)
-module Exceptionless =
-struct
-  let find f e =
-    try Some (find f e)
-    with Not_found -> None
 
-  let findi f e =
-    try Some (findi f e)
-    with Not_found -> None
-end
+let find_opt f e =
+  try Some (find f e)
+  with Not_found -> None
+
+let findi_opt f e =
+  try Some (findi f e)
+  with Not_found -> None
 
 module Labels =
 struct
@@ -897,11 +892,8 @@ struct
   let findi ~f e = findi f e
   let filter ~f a = filter f a
   let filter_map ~f a = filter_map f a
-  module LExceptionless = struct
-    include Exceptionless
-    let find ~f e = find f e
-    let findi ~f e = findi f e
-  end
+  let find_opt ~f e = find_opt f e
+  let findi_opt ~f e = findi_opt f e
 end
 (*BISECT-IGNORE-END*)
 

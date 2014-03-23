@@ -68,7 +68,5 @@ let equal eq a b = BatGen.eq ~eq (gen a) (gen b)
   0 <> (compare Int.compare (create()) (of_gen (List.gen [2])))
 *)
 
-module Exceptionless = struct
-  let top s = try Some (top s) with Empty -> None
-  let pop s = try Some (pop s) with Empty -> None
-end
+let top_opt s = try Some (top s) with Empty -> None
+let pop_opt s = try Some (pop s) with Empty -> None

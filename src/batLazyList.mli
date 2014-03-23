@@ -601,46 +601,44 @@ val print : ?first:string -> ?last:string -> ?sep:string ->('a BatInnerIO.output
 *)
 
 (** Exceptionless counterparts for error-raising operations*)
-module Exceptionless : sig
 
-  val find : ('a -> bool) -> 'a t -> 'a option
-  (** [rfind p l] returns [Some x] where [x] is the first element of [l] such
-    that [p x] returns [true] or [None] if such element as not been found. *)
+val find_opt : ('a -> bool) -> 'a t -> 'a option
+(** [rfind p l] returns [Some x] where [x] is the first element of [l] such
+  that [p x] returns [true] or [None] if such element as not been found. *)
 
-  val rfind : ('a -> bool) -> 'a t -> 'a option
-  (** [rfind p l] returns [Some x] where [x] is the last element of [l] such
-    that [p x] returns [true] or [None] if such element as not been found. *)
+val rfind_opt : ('a -> bool) -> 'a t -> 'a option
+(** [rfind p l] returns [Some x] where [x] is the last element of [l] such
+  that [p x] returns [true] or [None] if such element as not been found. *)
 
-  val findi : (int -> 'a -> bool) -> 'a t -> (int * 'a) option
-  (** [findi p e l] returns [Some (i, ai)] where [ai] and [i] are respectively the
-    first element of [l] and its index, such that [p i ai] is true,
-    or [None] if no such element has been found. *)
+val findi_opt : (int -> 'a -> bool) -> 'a t -> (int * 'a) option
+(** [findi p e l] returns [Some (i, ai)] where [ai] and [i] are respectively the
+  first element of [l] and its index, such that [p i ai] is true,
+  or [None] if no such element has been found. *)
 
-  val rfindi : (int -> 'a -> bool) -> 'a t -> (int * 'a) option
-  (** [findi p e l] returns [Some (i, ai)] where [ai] and [i] are respectively the
-    last element of [l] and its index, such that [p i ai] is true,
-    or [None] if no such element has been found. *)
+val rfindi_opt : (int -> 'a -> bool) -> 'a t -> (int * 'a) option
+(** [findi p e l] returns [Some (i, ai)] where [ai] and [i] are respectively the
+  last element of [l] and its index, such that [p i ai] is true,
+  or [None] if no such element has been found. *)
 
-  val split_at : int -> 'a t -> [`Ok of ('a t * 'a t) | `Invalid_index of int]
-  (** Whenever [n] is inside of [l] size bounds, [split_at n l] returns
-    [`Ok (l1,l2)], where [l1] contains the first [n] elements of [l] and [l2]
-    contains the others. Otherwise, returns [`Invalid_index n] *)
+val split_at_safe : int -> 'a t -> [`Ok of ('a t * 'a t) | `Invalid_index of int]
+(** Whenever [n] is inside of [l] size bounds, [split_at n l] returns
+  [`Ok (l1,l2)], where [l1] contains the first [n] elements of [l] and [l2]
+  contains the others. Otherwise, returns [`Invalid_index n] *)
 
-  val at : 'a t -> int -> [`Ok of 'a | `Invalid_index of int]
-  (** If [n] is inside the bounds of [l], [at l n] returns [`Ok x], where
-    [x] is the n-th element of the list [l]. Otherwise, returns
-    [`Invalid_index n].*)
+val at_safe : 'a t -> int -> [`Ok of 'a | `Invalid_index of int]
+(** If [n] is inside the bounds of [l], [at l n] returns [`Ok x], where
+  [x] is the n-th element of the list [l]. Otherwise, returns
+  [`Invalid_index n].*)
 
-  val assoc : 'a -> ('a * 'b) t -> 'b option
-  (** [assoc a l] returns [Some b] where [b] is the value associated with key [a]
-    in the list of pairs [l]. That is, [assoc a [ ...; (a,b); ...] = Some b]
-    if [(a,b)] is the leftmost binding of [a] in list [l].
-    Return [None] if there is no value associated with [a] in the
-        list [l]. *)
+val assoc_opt : 'a -> ('a * 'b) t -> 'b option
+(** [assoc a l] returns [Some b] where [b] is the value associated with key [a]
+  in the list of pairs [l]. That is, [assoc a [ ...; (a,b); ...] = Some b]
+  if [(a,b)] is the leftmost binding of [a] in list [l].
+  Return [None] if there is no value associated with [a] in the
+      list [l]. *)
 
-  val assq : 'a -> ('a * 'b) t -> 'b option
-    (** As {!assoc} but with physical equality *)
-end
+val assq_opt : 'a -> ('a * 'b) t -> 'b option
+  (** As {!assoc} but with physical equality *)
 
 (** Operations on {!LazyList} with labels.
 
@@ -677,15 +675,12 @@ module Labels : sig
   val for_all2 : f:('a -> 'b -> bool) -> 'a t -> 'b t -> bool
   val exists2 : f:('a -> 'b -> bool) -> 'a t -> 'b t -> bool
 
-
-  module Exceptionless : sig
-    val find:  f:('a -> bool) -> 'a t -> 'a option
-    val rfind: f:('a -> bool) -> 'a t -> 'a option
-    val findi: f:(int -> 'a -> bool) -> 'a t -> (int * 'a) option
-    val rfindi:f:(int -> 'a -> bool) -> 'a t -> (int * 'a) option
-    val split_at: int -> 'a t -> [`Ok of ('a t * 'a t) | `Invalid_index of int]
-    val at : 'a t -> int -> [`Ok of 'a | `Invalid_index of int]
-    val assoc : 'a -> ('a * 'b) t -> 'b option
-    val assq : 'a -> ('a * 'b) t -> 'b option
-  end
+  val find_opt:  f:('a -> bool) -> 'a t -> 'a option
+  val rfind_opt: f:('a -> bool) -> 'a t -> 'a option
+  val findi_opt: f:(int -> 'a -> bool) -> 'a t -> (int * 'a) option
+  val rfindi_opt:f:(int -> 'a -> bool) -> 'a t -> (int * 'a) option
+  val split_at_safe: int -> 'a t -> [`Ok of ('a t * 'a t) | `Invalid_index of int]
+  val at_safe : 'a t -> int -> [`Ok of 'a | `Invalid_index of int]
+  val assoc_opt : 'a -> ('a * 'b) t -> 'b option
+  val assq_opt : 'a -> ('a * 'b) t -> 'b option
 end

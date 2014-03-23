@@ -696,9 +696,7 @@ sig
     'a BatInnerIO.output -> 'c t -> unit
   val source : key BatConv.Source.t -> 'a BatConv.Source.t -> 'a t BatConv.Source.t
   val sink : key BatConv.Sink.t -> 'a BatConv.Sink.t -> 'a t BatConv.Sink.t
-  module Exceptionless : sig
-    val find: key -> 'a t -> 'a option
-  end
+  val find_opt: key -> 'a t -> 'a option
 
   module Infix : sig
     val (-->) : 'a t -> key -> 'a
@@ -819,10 +817,7 @@ struct
   let merge f t1 t2 =
     t_of_impl (Concrete.merge f Ord.compare (impl_of_t t1) (impl_of_t t2))
 
-  module Exceptionless =
-  struct
-    let find k t = try Some (find k t) with Not_found -> None
-  end
+  let find_opt k t = try Some (find k t) with Not_found -> None
 
   module Infix =
   struct
@@ -983,10 +978,7 @@ let compare cmp_val m1 m2 =
 
 let equal eq_val m1 m2 = Concrete.equal Pervasives.compare (=) m1 m2
 
-module Exceptionless =
-struct
-  let find k m = try Some (find k m) with Not_found -> None
-end
+let find_opt k m = try Some (find k m) with Not_found -> None
 
 module Infix =
 struct
@@ -1170,10 +1162,7 @@ module PMap = struct (*$< PMap *)
   let compare cmp_val m1 m2 = Concrete.compare m1.cmp cmp_val m1.map m2.map
   let equal eq_val m1 m2 = Concrete.equal m1.cmp eq_val m1.map m2.map
 
-  module Exceptionless =
-  struct
-    let find k m = try Some (find k m) with Not_found -> None
-  end
+  let find_opt k m = try Some (find k m) with Not_found -> None
 
   module Infix =
   struct

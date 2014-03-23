@@ -484,12 +484,10 @@ sig
   val source : elt BatConv.Source.t -> t BatConv.Source.t
   val sink : elt BatConv.Sink.t -> t BatConv.Sink.t
   (** Operations on {!Set} without exceptions.*)
-  module Exceptionless : sig
-    val min_elt: t -> elt option
-    val max_elt: t -> elt option
-    val choose:  t -> elt option
-    val find: elt -> t -> elt option
-  end
+  val min_elt_opt: t -> elt option
+  val max_elt_opt: t -> elt option
+  val choose_opt:  t -> elt option
+  val find_opt: elt -> t -> elt option
   (** Operations on {!Set} with labels. *)
   module Labels : sig
     val iter : f:(elt -> unit) -> t -> unit
@@ -604,13 +602,10 @@ struct
   let source source_e = BatConv.Source.map impl_of_t (Concrete.source source_e)
   let sink sink_e = BatConv.Sink.map t_of_impl (Concrete.sink Ord.compare sink_e)
 
-  module Exceptionless =
-  struct
-    let min_elt t = try Some (min_elt t) with Not_found -> None
-    let max_elt t = try Some (max_elt t) with Not_found -> None
-    let choose  t = try Some (choose t)  with Not_found -> None
-    let find  e t = try Some (find e t)  with Not_found -> None
-  end
+  let min_elt_opt t = try Some (min_elt t) with Not_found -> None
+  let max_elt_opt t = try Some (max_elt t) with Not_found -> None
+  let choose_opt  t = try Some (choose t)  with Not_found -> None
+  let find_opt  e t = try Some (find e t)  with Not_found -> None
 
   module Labels =
   struct

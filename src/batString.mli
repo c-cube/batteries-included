@@ -785,71 +785,68 @@ val source : t BatConv.Source.t
 val sink : t BatConv.Sink.t
 
 (** Exceptionless counterparts for error-raising operations *)
-module Exceptionless :
-sig
-  val to_int : string -> int option
-  (** Returns the integer represented by the given string or
-      [None] if the string does not represent an integer.*)
 
-  val to_float : string -> float option
-  (** Returns the float represented by the given string or
-      [None] if the string does not represent a float. *)
+val to_int_opt : string -> int option
+(** Returns the integer represented by the given string or
+    [None] if the string does not represent an integer.*)
 
-  val index : string -> char -> int option
-  (** [index s c] returns [Some p], the position of the leftmost
-      occurrence of character [c] in string [s] or
-      [None] if [c] does not occur in [s]. *)
+val to_float_opt : string -> float option
+(** Returns the float represented by the given string or
+    [None] if the string does not represent a float. *)
 
-  val rindex : string -> char -> int option
-  (** [rindex s c] returns [Some p], the position of the rightmost
-      occurrence of character [c] in string [s] or
-      [None] if [c] does not occur in [s]. *)
+val index_opt : string -> char -> int option
+(** [index s c] returns [Some p], the position of the leftmost
+    occurrence of character [c] in string [s] or
+    [None] if [c] does not occur in [s]. *)
 
-  val index_from : string -> int -> char -> int option
-  (** Same as {!String.Exceptionless.index}, but start
-      searching at the character position given as second argument.
-      [index s c] is equivalent to [index_from s 0 c].*)
+val rindex_opt : string -> char -> int option
+(** [rindex s c] returns [Some p], the position of the rightmost
+    occurrence of character [c] in string [s] or
+    [None] if [c] does not occur in [s]. *)
 
-  val rindex_from : string -> int -> char -> int option
-  (** Same as {!String.Exceptionless.rindex}, but start
-      searching at the character position given as second argument.
-      [rindex s c] is equivalent to
-      [rindex_from s (String.length s - 1) c]. *)
+val index_from_opt : string -> int -> char -> int option
+(** Same as {!String.index_opt}, but start
+    searching at the character position given as second argument.
+    [index s c] is equivalent to [index_from s 0 c].*)
 
-  val find : string -> string -> int option
-  (** [find s x] returns [Some i], the starting index of the first
-      occurrence of string [x] within string [s], or [None] if [x]
-      is not a substring of [s].
+val rindex_from_opt : string -> int -> char -> int option
+(** Same as {!String.rindex_opt}, but start
+    searching at the character position given as second argument.
+    [rindex s c] is equivalent to
+    [rindex_from s (String.length s - 1) c]. *)
 
-      {b Note} This implementation is optimized for short strings. *)
+val find_opt : string -> string -> int option
+(** [find s x] returns [Some i], the starting index of the first
+    occurrence of string [x] within string [s], or [None] if [x]
+    is not a substring of [s].
 
-  val find_from : string -> int -> string -> int option
-  (** [find_from s ofs x] behaves as [find s x] but starts searching
-      at offset [ofs]. [find s x] is equivalent to [find_from s 0 x].*)
+    {b Note} This implementation is optimized for short strings. *)
 
-  val rfind : string -> string -> int option
-  (** [rfind s x] returns [Some i], the starting index of the last occurrence
-      of string [x] within string [s], or [None] if [x] is not a substring
-      of [s].
+val find_from_opt : string -> int -> string -> int option
+(** [find_from s ofs x] behaves as [find s x] but starts searching
+    at offset [ofs]. [find s x] is equivalent to [find_from s 0 x].*)
 
-      {b Note} This implementation is optimized for short strings. *)
+val rfind_opt : string -> string -> int option
+(** [rfind s x] returns [Some i], the starting index of the last occurrence
+    of string [x] within string [s], or [None] if [x] is not a substring
+    of [s].
 
-  val rfind_from: string -> int -> string -> int option
-  (** [rfind_from s ofs x] behaves as [rfind s x] but starts searching
-      at offset [ofs]. [rfind s x] is equivalent to
-      [rfind_from s (String.length s - 1) x]. *)
+    {b Note} This implementation is optimized for short strings. *)
 
-  val split : string -> by:string -> (string * string) option
-  (** [split s sep] splits the string [s] between the first
+val rfind_from_opt: string -> int -> string -> int option
+(** [rfind_from s ofs x] behaves as [rfind s x] but starts searching
+    at offset [ofs]. [rfind s x] is equivalent to
+    [rfind_from s (String.length s - 1) x]. *)
+
+val split_opt : string -> by:string -> (string * string) option
+(** [split s sep] splits the string [s] between the first
+    occurrence of [sep], or returns [None] if the separator
+    is not found. *)
+
+val rsplit_opt : string -> by:string -> (string * string) option
+  (** [rsplit s sep] splits the string [s] between the last
       occurrence of [sep], or returns [None] if the separator
       is not found. *)
-
-  val rsplit : string -> by:string -> (string * string) option
-    (** [rsplit s sep] splits the string [s] between the last
-        occurrence of [sep], or returns [None] if the separator
-        is not found. *)
-
-end (* String.Exceptionless *)
 
 (** Capabilities for strings.
 
@@ -1066,35 +1063,32 @@ sig
   (**/**)
 
   (** Exceptionless counterparts for error-raising operations *)
-  module Exceptionless :
-  sig
-    val to_int : [> `Read] t -> int option
 
-    val to_float : [> `Read] t -> float option
+  val to_int_opt : [> `Read] t -> int option
 
-    val index : [>`Read] t -> char -> int option
+  val to_float_opt : [> `Read] t -> float option
 
-    val rindex : [> `Read] t -> char -> int option
+  val index_opt : [>`Read] t -> char -> int option
 
-    val index_from : [> `Read] t -> int -> char -> int option
+  val rindex_opt : [> `Read] t -> char -> int option
 
-    val rindex_from : [> `Read] t -> int -> char -> int option
+  val index_from_opt : [> `Read] t -> int -> char -> int option
 
-    val find : [> `Read] t -> [> `Read] t -> int option
+  val rindex_from_opt : [> `Read] t -> int -> char -> int option
 
-    val find_from: [> `Read] t -> int -> [> `Read] t -> int option
+  val find_opt : [> `Read] t -> [> `Read] t -> int option
 
-    val rfind : [> `Read] t -> [> `Read] t -> int option
+  val find_from_opt: [> `Read] t -> int -> [> `Read] t -> int option
 
-    val rfind_from: [> `Read] t -> int -> [> `Read] t -> int option
+  val rfind_opt : [> `Read] t -> [> `Read] t -> int option
 
-    (* val split : string -> string -> (string * string) option TODO *)
-    val split : [> `Read] t -> by:[> `Read] t -> (_ t * _ t) option
+  val rfind_from_opt: [> `Read] t -> int -> [> `Read] t -> int option
 
-    (*   val rsplit : string -> string -> (string * string) option TODO *)
-    val rsplit : [> `Read] t -> by:[> `Read] t -> (_ t * _ t) option
+  (* val split : string -> string -> (string * string) option TODO *)
+  val split_opt : [> `Read] t -> by:[> `Read] t -> (_ t * _ t) option
 
-  end (* String.Cap.Exceptionless *)
+  (*   val rsplit : string -> string -> (string * string) option TODO *)
+  val rsplit_opt : [> `Read] t -> by:[> `Read] t -> (_ t * _ t) option
 
 end
 

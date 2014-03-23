@@ -275,15 +275,9 @@ val sink : 'a BatConv.Sink.t -> 'b BatConv.Sink.t ->
    the functions meant to override the corresponding functions of {!Hashtbl}.
 *)
 
-(** Operations on {!Hashtbl} without exceptions.
-
-    @documents Hashtbl.Exceptionless
-*)
-module Exceptionless :
-sig
-  val find : ('a, 'b) t -> 'a -> 'b option
-  val modify : 'a -> ('b -> 'b) -> ('a, 'b) t -> (unit, exn) BatResult.t
-end
+(** Operations on {!Hashtbl} without exceptions. *)
+val find_opt : ('a, 'b) t -> 'a -> 'b option
+val modify_res : 'a -> ('b -> 'b) -> ('a, 'b) t -> (unit, exn) BatResult.t
 
 (** Infix operators over a {!BatHashtbl} *)
 module Infix :
@@ -402,14 +396,9 @@ sig
      the functions meant to override the corresponding functions of {!Hashtbl}.
   *)
 
-  (** Operations on {!Hashtbl} without exceptions.
-
-    @documents Hashtbl.S.Exceptionless*)
-  module Exceptionless :
-  sig
-    val find : 'a t -> key -> 'a option
-    val modify : key -> ('a -> 'a) -> 'a t -> (unit, exn) BatResult.t
-  end
+  (** Operations on {!Hashtbl} without exceptions. *)
+  val find_opt : 'a t -> key -> 'a option
+  val modify_res : key -> ('a -> 'a) -> 'a t -> (unit, exn) BatResult.t
 
   (** Infix operators over a {!BatHashtbl} *)
   module Infix :
@@ -565,11 +554,8 @@ sig
   (** {6 Override modules}*)
 
   (** Operations on {!BatHashtbl.Cap} without exceptions.*)
-  module Exceptionless :
-  sig
-    val find : ('a, 'b, [>`Read]) t -> 'a -> 'b option
-    val modify : 'a -> ('b -> 'b) -> ('a, 'b, [>`Read]) t -> (unit, exn) BatResult.t
-  end
+  val find_opt : ('a, 'b, [>`Read]) t -> 'a -> 'b option
+  val modify_res : 'a -> ('b -> 'b) -> ('a, 'b, [>`Read]) t -> (unit, exn) BatResult.t
 
   (** Operations on {!BatHashtbl.Cap} with labels.*)
   module Labels :

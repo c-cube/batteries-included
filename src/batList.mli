@@ -799,75 +799,73 @@ val dropwhile : ('a -> bool) -> 'a list -> 'a list
 *)
 
 (** Exceptionless counterparts for error-raising operations*)
-module Exceptionless : sig
 
-  val find : ('a -> bool) -> 'a list -> 'a option
-  (** [find p l] returns [Some x] where [x] is the first element
-      of [l] such as [p x] returns [true] or [None] if such an
-      element has not been found.*)
+val find_opt : ('a -> bool) -> 'a list -> 'a option
+(** [find p l] returns [Some x] where [x] is the first element
+    of [l] such as [p x] returns [true] or [None] if such an
+    element has not been found.*)
 
-  val rfind : ('a -> bool) -> 'a list -> 'a option
-  (** [rfind p l] returns [Some x] where [x] is the last element of [l]
-      such
-      that [p x] returns [true] or [None] if such element as not been found. *)
+val rfind_opt : ('a -> bool) -> 'a list -> 'a option
+(** [rfind p l] returns [Some x] where [x] is the last element of [l]
+    such
+    that [p x] returns [true] or [None] if such element as not been found. *)
 
-  val findi : (int -> 'a -> bool) -> 'a list -> (int * 'a) option
-  (** [findi p e l] returns [Some (i, ai)] where [ai] and [i] are
-      respectively the
-      first element of [l] and its index, such that [p i ai] is true,
-      or [None] if no  such element has been found. *)
+val findi_opt : (int -> 'a -> bool) -> 'a list -> (int * 'a) option
+(** [findi p e l] returns [Some (i, ai)] where [ai] and [i] are
+    respectively the
+    first element of [l] and its index, such that [p i ai] is true,
+    or [None] if no  such element has been found. *)
 
-  val split_at : int -> 'a list -> [`Ok of ('a list * 'a list) |
-                                    `Invalid_argument of string]
-  (** Whenever [n] is inside of [l] size bounds, [split_at n l] returns
-      [Ok(l1,l2)], where [l1] contains the first [n] elements of [l] and [l2]
-      contains the others. Otherwise, returns [`Invalid_argument n] *)
+val split_at_safe : int -> 'a list -> [`Ok of ('a list * 'a list) |
+                                  `Invalid_argument of string]
+(** Whenever [n] is inside of [l] size bounds, [split_at n l] returns
+    [Ok(l1,l2)], where [l1] contains the first [n] elements of [l] and [l2]
+    contains the others. Otherwise, returns [`Invalid_argument n] *)
 
-  val at : 'a list -> int -> [`Ok of 'a | `Invalid_argument of string]
-  (** If [n] is inside the bounds of [l], [at l n] returns [Ok x], where
-      [x] is the n-th element of the list [l]. Otherwise, returns [Error
-      (`Invalid_argument(n))].*)
-
-
-  val assoc : 'a -> ('a * 'b) list -> 'b option
-  (** [assoc a l] returns [Some b] where [b] is the value associated with
-      key [b]
-      in the list of pairs [l]. That is, [assoc a [ ...; (a,b); ...] = Some b]
-      if [(a,b)] is the leftmost binding of [a] in list [l].
-      Return [None] if there is no value associated with [a] in the
-      list [l]. *)
-
-  val assoc_inv : 'b -> ('a * 'b) list -> 'a option
-  (** [assoc_inv b l] returns [Some a] where [a] is the key associated with
-      value [b]
-      in the list of pairs [l]. That is, [assoc b [ ...; (a,b); ...] = Some a]
-      if [(a,b)] is the leftmost binding of [a] in list [l].
-      Return [None] if there is no key associated with [b] in the
-      list [l]. *)
+val at_safe : 'a list -> int -> [`Ok of 'a | `Invalid_argument of string]
+(** If [n] is inside the bounds of [l], [at l n] returns [Ok x], where
+    [x] is the n-th element of the list [l]. Otherwise, returns [Error
+    (`Invalid_argument(n))].*)
 
 
-  val assq : 'a -> ('a * 'b) list -> 'b option
-  (** As {!assoc} but with physical equality. *)
+val assoc_opt : 'a -> ('a * 'b) list -> 'b option
+(** [assoc a l] returns [Some b] where [b] is the value associated with
+    key [b]
+    in the list of pairs [l]. That is, [assoc a [ ...; (a,b); ...] = Some b]
+    if [(a,b)] is the leftmost binding of [a] in list [l].
+    Return [None] if there is no value associated with [a] in the
+    list [l]. *)
 
-  val find_map : ('a -> 'b option) -> 'a list -> 'b option
-  (** [find_map f xs] returns [Some y] such that [x] is the first
-      element of the list where [f x] returns [Some y].  It returns [None]
-      if no such element exists. *)
+val assoc_inv_opt : 'b -> ('a * 'b) list -> 'a option
+(** [assoc_inv b l] returns [Some a] where [a] is the key associated with
+    value [b]
+    in the list of pairs [l]. That is, [assoc b [ ...; (a,b); ...] = Some a]
+    if [(a,b)] is the leftmost binding of [a] in list [l].
+    Return [None] if there is no key associated with [b] in the
+    list [l]. *)
 
-  val hd : ('a list -> 'a option)
-  (** [hd l] returns [Some x] such that [x] is the first element of the given
-      list [l].
-      Returns [None] if list [l] is empty. *)
 
-  val tl : ('a list -> 'a list option)
-  (** [tl l] returns [Some x] such that [x] is the given list [l] without its
-      first element.
-      Returns [None] if list [l] is empty *)
+val assq_opt : 'a -> ('a * 'b) list -> 'b option
+(** As {!assoc} but with physical equality. *)
 
-  val last : 'a list -> 'a option
-    (** [last l] returns either [Some x] where [x] is the last element of the list, or [None] if
-        the list is empty. This function takes linear time. *)
-end
+val find_map_opt : ('a -> 'b option) -> 'a list -> 'b option
+(** [find_map f xs] returns [Some y] such that [x] is the first
+    element of the list where [f x] returns [Some y].  It returns [None]
+    if no such element exists. *)
+
+val hd_opt : ('a list -> 'a option)
+(** [hd l] returns [Some x] such that [x] is the first element of the given
+    list [l].
+    Returns [None] if list [l] is empty. *)
+
+val tl_opt : ('a list -> 'a list option)
+(** [tl l] returns [Some x] such that [x] is the given list [l] without its
+    first element.
+    Returns [None] if list [l] is empty *)
+
+val last_opt : 'a list -> 'a option
+  (** [last l] returns either [Some x] where [x] is the last element of the list, or [None] if
+      the list is empty. This function takes linear time. *)
 
 (** {6 Infix submodule regrouping all infix operators} *)
 module Infix : sig
@@ -915,17 +913,13 @@ module Labels : sig
   val stable_sort : ?cmp:('a -> 'a -> int) -> 'a list -> 'a list
   val fast_sort : ?cmp:('a -> 'a -> int) -> 'a list -> 'a list
   val merge : ?cmp:('a -> 'a -> int) -> 'a list -> 'a list -> 'a list
-  module LExceptionless : sig
-    val find : f:('a -> bool) -> 'a list -> 'a option
-    val rfind : f:('a -> bool) -> 'a list -> 'a option
-    val findi : f:(int -> 'a -> bool) -> 'a list -> (int * 'a) option
-    val split_at : int -> 'a list ->
-      [`Ok of ('a list * 'a list) |`Invalid_argument of string]
-    val at : 'a list -> int -> [`Ok of 'a | `Invalid_argument of string]
-    val assoc : 'a -> ('a * 'b) list -> 'b option
-    val assoc_inv : 'b -> ('a * 'b) list -> 'a option
-    val assq : 'a -> ('a * 'b) list -> 'b option
-  end
+  val find_opt : f:('a -> bool) -> 'a list -> 'a option
+  val rfind_opt : f:('a -> bool) -> 'a list -> 'a option
+  val findi_opt : f:(int -> 'a -> bool) -> 'a list -> (int * 'a) option
+  val split_at_safe : i:int -> 'a list -> [`Ok of ('a list * 'a list) |`Invalid_argument of string]
+  val at_safe : i:int -> 'a list -> [`Ok of 'a | `Invalid_argument of string]
+  val assoc_opt : key:'a -> ('a * 'b) list -> 'b option
+  val assq_opt : key:'a -> ('a * 'b) list -> 'b option
 end
 
 

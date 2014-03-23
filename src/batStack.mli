@@ -99,7 +99,5 @@ val print : ?first:string -> ?last:string -> ?sep:string -> ('a BatInnerIO.outpu
 val compare : 'a BatOrd.comp -> 'a t BatOrd.comp
 val equal : 'a BatOrd.eq -> 'a t BatOrd.eq
 
-module Exceptionless : sig
-  val top : 'a t -> 'a option
-  val pop : 'a t -> 'a option
-end
+val top_opt : 'a t -> 'a option
+val pop_opt : 'a t -> 'a option

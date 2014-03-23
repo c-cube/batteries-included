@@ -263,12 +263,11 @@ sig
   *)
 
   (** Operations on {!Set} without exceptions.*)
-  module Exceptionless : sig
-    val min_elt: t -> elt option
-    val max_elt: t -> elt option
-    val choose:  t -> elt option
-    val find: elt -> t -> elt option
-  end
+
+  val min_elt_opt: t -> elt option
+  val max_elt_opt: t -> elt option
+  val choose_opt:  t -> elt option
+  val find_opt: elt -> t -> elt option
 
 
   (** Operations on {!Set} with labels.

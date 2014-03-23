@@ -302,9 +302,7 @@ sig
   *)
 
   (** Operations on {!Map} without exceptions.*)
-  module Exceptionless : sig
-    val find: key -> 'a t -> 'a option
-  end
+  val find_opt: key -> 'a t -> 'a option
 
   (** Infix operators over a {!BatMap} *)
   module Infix : sig
@@ -562,9 +560,7 @@ val equal : ('b -> 'b -> bool) -> ('a,'b) t -> ('a, 'b) t -> bool
     function to compare keys *)
 
 (** Exceptionless versions of functions *)
-module Exceptionless : sig
-  val find: 'a -> ('a,'b) t -> 'b option
-end
+val find_opt: 'a -> ('a,'b) t -> 'b option
 
 
 
@@ -840,9 +836,7 @@ module PMap : sig
 
 
   (** Exceptionless versions of functions *)
-  module Exceptionless : sig
-    val find: 'a -> ('a,'b) t -> 'b option
-  end
+  val find_opt: 'a -> ('a,'b) t -> 'b option
 
 
   (** Infix operators over a {!PMap} *)

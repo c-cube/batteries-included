@@ -458,10 +458,8 @@ struct
     let filter ~f = filter f
   end
 
-  module Exceptionless = struct
-    let find k m =
-      try Some (find k m) with Not_found -> None
-  end
+  let find_opt k m =
+    try Some (find k m) with Not_found -> None
 
   module Infix = struct
     let ( --> ) m k = find k m

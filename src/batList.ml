@@ -1202,56 +1202,54 @@ let subset cmp l l' = for_all (fun x -> mem_cmp cmp x l') l
   subset Pervasives.compare [1;2] [1;2;3] = true
 *)
 
-module Exceptionless = struct
-  let rfind p l =
-    try  Some (rfind p l)
-    with Not_found -> None
+let rfind_opt p l =
+  try  Some (rfind p l)
+  with Not_found -> None
 
-  let find p l =
-    try Some (find p l)
-    with Not_found -> None
+let find_opt p l =
+  try Some (find p l)
+  with Not_found -> None
 
-  let findi p l =
-    try  Some (findi p l)
-    with Not_found -> None
+let findi_opt p l =
+  try  Some (findi p l)
+  with Not_found -> None
 
-  let split_at n l =
-    try   `Ok (split_at n l)
-    with Invalid_argument s -> `Invalid_argument s
+let split_at_safe n l =
+  try   `Ok (split_at n l)
+  with Invalid_argument s -> `Invalid_argument s
 
-  let at n l =
-    try `Ok (at n l)
-    with Invalid_argument s -> `Invalid_argument s
+let at_safe n l =
+  try `Ok (at n l)
+  with Invalid_argument s -> `Invalid_argument s
 
-  let assoc e l =
-    try Some (assoc e l)
-    with Not_found -> None
+let assoc_opt e l =
+  try Some (assoc e l)
+  with Not_found -> None
 
-  let assq e l =
-    try Some (assq e l)
-    with Not_found -> None
+let assq_opt e l =
+  try Some (assq e l)
+  with Not_found -> None
 
-  let assoc_inv e l =
-    try Some (assoc_inv e l)
-    with Not_found -> None
+let assoc_inv_opt e l =
+  try Some (assoc_inv e l)
+  with Not_found -> None
 
-  let find_map f l =
-    try Some(find_map f l)
-    with Not_found -> None
+let find_map_opt f l =
+  try Some(find_map f l)
+  with Not_found -> None
 
-  let hd l =
-    try Some (hd l)
-    with Failure "hd" -> None
+let hd_opt l =
+  try Some (hd l)
+  with Failure "hd" -> None
 
-  let tl l =
-    try Some (tl l)
-    with Failure "tl" -> None
+let tl_opt l =
+  try Some (tl l)
+  with Failure "tl" -> None
 
-  let rec last = function
-    | [] -> None
-    | [x] -> Some x
-    | _ :: l -> last l
-end
+let rec last_opt = function
+  | [] -> None
+  | [x] -> Some x
+  | _ :: l -> last_opt l
 
 
 
@@ -1293,12 +1291,13 @@ module Labels = struct
   let sort ?(cmp=compare)         = sort cmp
   let merge ?(cmp=compare)        = merge cmp
 
-  module LExceptionless = struct
-    include Exceptionless
-    let rfind ~f l = rfind f l
-    let find ~f l = find f l
-    let findi ~f l = findi f l
-  end
+  let find_opt ~f = find_opt f
+  let rfind_opt ~f = rfind_opt f
+  let findi_opt ~f = findi_opt f
+  let split_at_safe ~i = split_at_safe i
+  let at_safe ~i l = at_safe l i
+  let assoc_opt ~key = assoc_opt key
+  let assq_opt ~key = assq_opt key
 end
 
 let ( @ ) = List.append

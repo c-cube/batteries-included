@@ -321,11 +321,8 @@ let filter_map_inplace f h =
 *)
 
 
-module Exceptionless =
-struct
-  let find = find_option
-  let modify k f = BatResult.wrap (modify k f)
-end
+let find_opt = find_option
+let modify_res k f = BatResult.wrap (modify k f)
 
 module Infix =
 struct
@@ -396,11 +393,8 @@ sig
     'a BatInnerIO.output -> 'b t -> unit
 
   (** Operations on {!Hashtbl} without exceptions.*)
-  module Exceptionless :
-  sig
-    val find : 'a t -> key -> 'a option
-    val modify : key -> ('a -> 'a) -> 'a t -> (unit, exn) BatResult.t
-  end
+  val find_opt : 'a t -> key -> 'a option
+  val modify_res : key -> ('a -> 'a) -> 'a t -> (unit, exn) BatResult.t
 
   (** Infix operators over a {!BatHashtbl} *)
   module Infix :
@@ -677,11 +671,8 @@ struct
     let modify_opt ~key ~f = modify_opt key f
   end
 
-  module Exceptionless =
-  struct
-    let find = find_option
-    let modify k f = BatResult.wrap (modify k f)
-  end
+  let find_opt = find_option
+  let modify_res k f = BatResult.wrap (modify k f)
 
   module Infix =
   struct
@@ -754,9 +745,6 @@ struct
     let modify_opt ~key ~f = modify_opt key f
   end
 
-  module Exceptionless =
-  struct
-    let find = find_option
-    let modify k f = BatResult.wrap (modify k f)
-  end
+  let find_opt = find_option
+  let modify_res k f = BatResult.wrap (modify k f)
 end

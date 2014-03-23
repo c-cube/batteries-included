@@ -648,34 +648,32 @@ module Infix = struct
   let ( ^:^ ), ( ^@^ ) = ( ^:^ ), ( ^@^ )
 end
 
-module Exceptionless = struct
-  (** Exceptionless counterparts for error-raising operations*)
+(** Exceptionless counterparts for error-raising operations*)
 
-  let find   = may_find
-  let rfind  = may_rfind
-  let findi  = may_findi
-  let rfindi = may_rfindi
+let find_opt   = may_find
+let rfind_opt  = may_rfind
+let findi_opt  = may_findi
+let rfindi_opt = may_rfindi
 
-  let at list n =
-    let rec aux list i =
-      match (next list, i) with
-      | (Cons (x, _), 0) -> `Ok x
-      | (Cons (_, t), _) -> aux t (i - 1)
-      | (Nil, _) -> `Invalid_index n
-    in if n < 0 then `Invalid_index n else aux list n
+let at_safe list n =
+  let rec aux list i =
+    match (next list, i) with
+    | (Cons (x, _), 0) -> `Ok x
+    | (Cons (_, t), _) -> aux t (i - 1)
+    | (Nil, _) -> `Invalid_index n
+  in if n < 0 then `Invalid_index n else aux list n
 
-  let assoc a (l:'a t) =
-    try  Some (assoc a l)
-    with Not_found -> None
+let assoc_opt a (l:'a t) =
+  try  Some (assoc a l)
+  with Not_found -> None
 
-  let assq a l =
-    try  Some (assq a l)
-    with Not_found -> None
+let assq_opt a l =
+  try  Some (assq a l)
+  with Not_found -> None
 
-  let split_at n l =
-    try  `Ok (split_at n l)
-    with Not_found -> `Invalid_index n
-end
+let split_at_safe n l =
+  try  `Ok (split_at n l)
+  with Not_found -> `Invalid_index n
 
 module Labels = struct
   let iter ~f x         = iter f x
@@ -705,17 +703,14 @@ module Labels = struct
   let fold_left2 ~f ~init = fold_left2 f init
   let fold_right2 ~f l1 l2 ~init = fold_right2 f l1 l2 init
 
-  module Exceptionless = struct
-    let find   ~f = Exceptionless.find f
-    let rfind  ~f = Exceptionless.rfind f
-    let findi  ~f = Exceptionless.findi f
-    let rfindi ~f = Exceptionless.rfindi f
+  let find_opt   ~f = find_opt f
+  let rfind_opt  ~f = rfind_opt f
+  let findi_opt  ~f = findi_opt f
+  let rfindi_opt ~f = rfindi_opt f
 
-    let assq      = Exceptionless.assq
-    let assoc     = Exceptionless.assoc
-    let at        = Exceptionless.at
-    let split_at  = Exceptionless.split_at
-
-  end
+  let assq_opt      = assq_opt
+  let assoc_opt     = assoc_opt
+  let at_safe        = at_safe
+  let split_at_safe  = split_at_safe
 
 end

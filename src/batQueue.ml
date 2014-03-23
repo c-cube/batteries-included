@@ -55,11 +55,9 @@ let print ?(first="") ?(last="") ?(sep="") print_a out t =
 let compare cmp a b = BatGen.compare ~cmp (gen a) (gen b)
 let equal eq a b = BatGen.eq ~eq (gen a) (gen b)
 
-module Exceptionless = struct
-  let peek q = try Some (peek q) with Empty -> None
-  let take q = try Some (take q) with Empty -> None
-  (*$T
-    Exceptionless.peek (Queue.create ()) = None
-    Exceptionless.take (Queue.create ()) = None
-  *)
-end
+let peek_opt q = try Some (peek q) with Empty -> None
+let take_opt q = try Some (take q) with Empty -> None
+(*$T
+  peek_opt (Queue.create ()) = None
+  take_opt (Queue.create ()) = None
+*)
