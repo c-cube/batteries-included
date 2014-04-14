@@ -72,80 +72,64 @@ Library "batteries_bigarray"
   Path:             src/bigarray/
   Modules:          BatBigarray
   Build$:           flag(bigarray)
-  Install$:         flag(bigarray)
   FindlibName:      bigarray
   FindlibParent:    batteries
-  BuildDepends:     batteries.core
-  XMETARequires:    batteries.core
+  BuildDepends:     batteries.core,bigarray
 
 Library "batteries_unix"
   Path:             src/unix
   Modules:          BatUnix, BatLogger, BatLog, BatFile
   Build$:           flag(unix)
-  Install$:         flag(unix)
   FindlibName:      unix
   FindlibParent:    batteries
-  BuildDepends:     batteries.core,batteries.bigarray
-  XMETARequires:    batteries.core,batteries.bigarray
+  BuildDepends:     batteries.core,batteries.bigarray,unix
 
 Library "batteries_num"
   Path:             src/num
   Modules:          BatNum, BatBig_int
   Build$:           flag(num)
-  Install$:         flag(num)
   FindlibName:      num
   FindlibParent:    batteries
   BuildDepends:     batteries.core,num
-  XMETARequires:    batteries.core,num
 
 Library "batteries_thread"
   Path:             src/thread
   Modules:          BatRMutex, BatMutex
   Build$:           flag(thread)
-  Install$:         flag(thread)
   FindlibName:      thread
   FindlibParent:    batteries
   BuildDepends:     batteries.core,threads
-  XMETARequires:    batteries.core,threads
 
 Library "batteries"
   Path:             src/full
   Modules:          BatPervasives, BatInnerPervasives, Batteries,
                     BatteriesExceptionless
   Build$:           flag(unix) && flag(bigarray)
-  Install$:         flag(unix) && flag(bigarray)
   BuildDepends:     batteries.core,batteries.bigarray,batteries.unix,num,str
-  XMETARequires:    batteries.core,batteries.bigarray,batteries.unix,num,str
 
 Library "batteries_sexp"
   Path:             src/sexp
   Modules:          BatSexp
   Build$:           flag(sexp)
-  Install$:         flag(sexp)
   FindlibName:      sexp
   FindlibParent:    batteries
   BuildDepends:     batteries.core,sexplib
-  XMETARequires:    batteries.core,sexplib
 
 Library "batteries_yojson"
   Path:             src/yojson
   Modules:          BatYojson
   Build$:           flag(yojson)
-  Install$:         flag(yojson)
   FindlibName:      yojson
   FindlibParent:    batteries
   BuildDepends:     batteries.core,yojson
-  XMETARequires:    batteries.core,yojson
 
 Library "batteries_bencode"
   Path:             src/bencode
   Modules:          BatBencode
   Build$:           flag(bencode)
-  Install$:         flag(bencode)
   FindlibName:      bencode
   FindlibParent:    batteries
   BuildDepends:     batteries.core,bencode
-  XMETARequires:    batteries.core,bencode
 
 Document manual
   Type:         custom (0.2)
