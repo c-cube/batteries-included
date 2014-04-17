@@ -323,7 +323,7 @@ let concat lol =
 
 (** {6 Monad} *)
 
-let concat_map f l = map f l |> concat
+let concat_map f l = concat (map f l)
 
 module Monad = struct
   type 'a m = 'a t
