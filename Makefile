@@ -45,7 +45,8 @@ configure:
 ###############################################################################
 
 PREPROCESSED_FILES = src/batMarshal.mli src/unix/batUnix.mli \
-		     src/full/batInnerPervasives.ml src/batHashtbl.ml \
+		     src/full/batInnerPervasives.ml \
+		     src/full/batPervasives.mli src/batHashtbl.ml \
 		     src/batFun.ml src/batFun.mli \
 		     src/batPrintexc.mli src/batSys.mli \
 		     src/bigarray/batBigarray.mli
