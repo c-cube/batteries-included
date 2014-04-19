@@ -1,6 +1,6 @@
 true: debug
-<thread/{batMutex,batRMutex}.*>: threads
-<thread/batteriesThread.*>: threads
+<thread/{batMutex,batRMutex}.*>: thread
+<thread/batteriesThread.*>: thread
 <batFingerTree.ml>: rectypes
 <{batMap,batVect,unix/batFile,batPervasives,batParserCo,batSet,unix/batLogger,batPathGen,batSplay}.ml>: warn_z
 <{full/batPervasives,batIMap,unix/batLog}.ml>: warn_-9
