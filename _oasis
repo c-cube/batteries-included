@@ -1,4 +1,4 @@
-OASISFormat:        0.3
+OASISFormat:        0.4
 OCamlVersion:       >= 3.12.1
 Name:               batteries
 Version:            light-alpha
@@ -14,7 +14,9 @@ Plugins:            META (0.3), DevFiles (0.3)
 Synopsis:           Extended OCaml Standard Library
 FilesAB:            src/batteriesConfig.ml.ab
 PrebuildCommand:    make prefilter
- 
+
+AlphaFeatures: compiled_setup_ml
+
 #XCustomBuild: $make all
 #XCustomInstall: $make install
 #XCustomUninstall: $make uninstall
@@ -145,5 +147,3 @@ SourceRepository master
   Location:     git://github.com/ocaml-batteries-team/batteries-included.git
   Branch:       master
   Browser:      https://github.com/ocaml-batteries-team/batteries-included
-
-
