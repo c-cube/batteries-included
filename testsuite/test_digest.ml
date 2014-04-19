@@ -10,6 +10,7 @@ let legacy_result () =
 
 (*2. Compute the digest of this file using Batteries.Digest*)
 
+(* XXX: deprecated ugly function
 let batteries_result () =
   let inp    = BatFile.open_in Sys.argv.(0) in
   let result = BatDigest.channel inp (-1)   in
@@ -20,7 +21,8 @@ let batteries_result () =
 let test_legacy_against_batteries () =
   assert_equal ~printer:(Printf.sprintf "%S")
     (legacy_result ()) (batteries_result ())
-
+*)
 let tests = "Digest" >::: [
-  "Comparing Legacy.Digest and MD5" >:: test_legacy_against_batteries;
+  (* "Comparing Legacy.Digest and MD5" >:: test_legacy_against_batteries; *)
 ]
+

@@ -90,7 +90,7 @@ TESTDEPS = prefilter $(TESTABLE)
 ##############################################
 
 _build/testsuite/main.byte: $(TESTDEPS) $(wildcard testsuite/*.ml)
-	$(OCAMLBUILD) $(OCAMLBUILDFLAGS) testsuite/main.byte
+	$(OCAMLBUILD) $(OCAMLBUILDFLAGS) -I _build testsuite/main.byte
 _build/testsuite/main.native: $(TESTDEPS) $(wildcard testsuite/*.ml)
 	$(OCAMLBUILD) $(OCAMLBUILDFLAGS) testsuite/main.native
 

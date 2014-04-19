@@ -172,15 +172,15 @@ let test_is_prefix =
     end;
   ];;
 
-let test_enum =
+let test_gen =
   let ss = of_string "testing" in
-  let test_enum substring = ss |> to_string |> BatString.enum in
+  let test_gen substring = ss |> to_string |> BatString.gen in
   [
-    begin "enum" >:: fun () ->
-      assert_equal (ss |> enum |> BatString.of_enum) "testing";
-      assert_equal (size ss) (ss |> enum |> BatEnum.count) ~printer:string_of_int;
-      assert_equal (ss |> enum |> BatString.of_enum)
-                   (ss |> test_enum |> BatString.of_enum)
+    begin "gen" >:: fun () ->
+      assert_equal (ss |> gen |> BatString.of_gen) "testing";
+      assert_equal (size ss) (ss |> gen |> BatGen.length) ~printer:string_of_int;
+      assert_equal (ss |> gen |> BatString.of_gen)
+                   (ss |> test_gen |> BatString.of_gen)
     end
   ]
 
@@ -206,6 +206,6 @@ let tests = "Substring" >::: [
   "slice" >::: test_slice;
   "index_from" >::: test_index_from;
   "is_prefix" >::: test_is_prefix;
-  "enum" >::: test_enum;
+  "gen" >::: test_gen;
   "test_iteri" >::: test_iteri;
 ];;

@@ -2,42 +2,42 @@ open BatPervasives
 module R = BatRandom
 module U = OUnit
 
-let print_enum out enum =
-  BatEnum.print (fun out (c, _) -> BatPrintf.fprintf out "%d" c) out enum
+let print_gen out gen =
+  BatGen.print (fun out (c, _) -> BatPrintf.fprintf out "%d" c) out gen
 
-let assert_equal_enums enum_1 enum_2 =
-  match BatEnum.compare compare (enum_1 ()) (enum_2 ()) with
+let assert_equal_gens gen_1 gen_2 =
+  match BatGen.compare ~cmp:compare (gen_1 ()) (gen_2 ()) with
     | 0 -> (* pass *) ()
     | _ ->
         U.assert_failure
           (BatPrintf.sprintf2 "Expected %a, got %a"
-             print_enum (enum_1 ()) print_enum (enum_2 ()))
+             print_gen (gen_1 ()) print_gen (gen_2 ()))
 
 let assert_equal_maps map_1 map_2 =
-  let enum_1 () = BatMap.enum map_1 in
-  let enum_2 () = BatMap.enum map_2 in
-  assert_equal_enums enum_1 enum_2
+  let gen_1 () = BatMap.gen map_1 in
+  let gen_2 () = BatMap.gen map_2 in
+  assert_equal_gens gen_1 gen_2
 
 let test_traversal_order () =
   let init = R.State.make [|0|] in
-  let keys = BatEnum.take 50 (R.State.enum_int init 10) in
-  let map  = BatMap.of_enum (BatEnum.map (fun x -> (x,x)) keys) in
-  let enum_1 () = BatMap.enum map
-  and enum_2 () =
+  let keys = BatGen.take 50 (R.State.gen_int init 10) in
+  let map  = BatMap.of_gen (BatGen.map (fun x -> (x,x)) keys) in
+  let gen_1 () = BatMap.gen map
+  and gen_2 () =
     let list = BatRefList.empty () in
       BatMap.iter (fun k v -> BatRefList.push list (k, v)) map;
       BatRefList.backwards list
   in
-    match BatEnum.compare compare (enum_1 ()) (enum_2 ()) with
+    match BatGen.compare ~cmp:compare (gen_1 ()) (gen_2 ()) with
       | 0 -> (* pass *) ()
       | _ ->
           U.assert_failure
             (BatPrintf.sprintf2 "Expected %a, got %a"
-               print_enum (enum_1 ()) print_enum (enum_2 ()))
+               print_gen (gen_1 ()) print_gen (gen_2 ()))
 
 let gen_map state bound count =
-  let keys = BatEnum.take count (R.State.enum_int state bound) in
-  BatMap.of_enum (BatEnum.map (fun x -> (x,x)) keys)
+  let keys = BatGen.take count (R.State.gen_int state bound) in
+  BatMap.of_gen (BatGen.map (fun x -> (x,x)) keys)
 
 let test_split () =
   let do_test map v =
@@ -109,9 +109,9 @@ module TestMap
     val filter_map : (key -> 'a -> 'b option) -> 'a m -> 'b m
 
     val bindings : 'a m -> (key * 'a) list
-    val enum : 'a m -> (key * 'a) BatEnum.t
-    val backwards : 'a m -> (key * 'a) BatEnum.t
-    val of_enum : (key * 'a) BatEnum.t -> 'a m
+    val gen : 'a m -> (key * 'a) BatGen.t
+    val backwards : 'a m -> (key * 'a) BatGen.t
+    val of_gen : (key * 'a) BatGen.t -> 'a m
     val bindings : 'a m -> (key * 'a) list
 
     val for_all : (key -> 'a -> bool) -> 'a m -> bool
@@ -134,8 +134,8 @@ module TestMap
   end)
 = struct
 
-  let li t = BatList.of_enum (M.enum t)
-  let il li = M.of_enum (BatList.enum li)
+  let li t = BatList.of_gen (M.gen t)
+  let il li = M.of_gen (BatList.gen li)
 
   let eq_li ?msg cmp_elt print_elt l1 l2 =
     let cmp t1 t2 =
@@ -418,19 +418,19 @@ module TestMap
     test "{0: 1, 2: 3}" [(0, 1); (2, 3)];
     ()
 
-  let test_enums () =
-    (* test enum, of_enum, backwards *)
-    let test_of_enum f name_f t =
-      eq ~msg:(Printf.sprintf "of_enum (%s t) = t" name_f)
+  let test_gens () =
+    (* test gen, of_gen, backwards *)
+    let test_of_gen f name_f t =
+      eq ~msg:(Printf.sprintf "of_gen (%s t) = t" name_f)
         BatInt.compare BatInt.print
-        (M.of_enum (f t)) t in
+        (M.of_gen (f t)) t in
     List.iter (fun (f, name_f) ->
-      test_of_enum f name_f (il []);
-      test_of_enum f name_f (il [(0,1); (4,5); (2, 3)]))
+      test_of_gen f name_f (il []);
+      test_of_gen f name_f (il [(0,1); (4,5); (2, 3)]))
       [
-        M.enum, "enum";
+        M.gen, "gen";
         M.backwards, "backwards";
-        M.bindings %> BatList.enum, "enum bindings";
+        M.bindings %> BatList.gen, "gen bindings";
       ]
 
   let reindex (f : M.key -> 'a -> 'b) : 'a -> 'b =
@@ -575,7 +575,7 @@ module TestMap
     "test_merge" >:: test_merge;
     "test_for_all_exists" >:: test_for_all_exists;
     "test_print" >:: test_print;
-    "test_enums" >:: test_enums;
+    "test_gens" >:: test_gens;
     "test_iterators" >:: test_iterators;
     "test_pop" >:: test_pop;
     "test_extract" >:: test_extract;
@@ -635,7 +635,7 @@ module TS = TestMap(S)
 *)
 let heterogeneous_tests =
   let module P = BatMap.PMap in
-  let li m = BatList.of_enum (P.enum m) in
+  let li m = BatList.of_gen (P.gen m) in
 
   let (@=) msg (act, exp) =
     let cmp t1 t2 =
@@ -646,7 +646,7 @@ let heterogeneous_tests =
     U.assert_equal ~msg ~cmp ~printer exp act in
 
   let compare_modulo p x y = BatInt.compare (x mod p) (y mod p) in
-  let il p m = P.of_enum ~cmp:(compare_modulo p) (BatList.enum m) in
+  let il p m = P.of_gen ~cmp:(compare_modulo p) (BatList.gen m) in
 
   let m13 = il 13 [4,-4; 8,-8; 12,-5] in
   let m7 = il 7 [9,0; 3,3; 2,2; 5,5] in
@@ -695,7 +695,7 @@ let heterogeneous_tests =
 let test_splay_print_as_list () =
   let module M = BatSplay.Map(BatInt) in
   let test list =
-    let splay = M.of_enum (BatList.enum list) in
+    let splay = M.of_gen (BatList.gen list) in
     let print_pair out (a, b) = BatPrintf.fprintf out "%d, %d" a b in
     U.assert_equal ~printer:identity
       (BatIO.to_string (M.print_as_list BatInt.print BatInt.print) splay)
@@ -705,7 +705,7 @@ let test_splay_print_as_list () =
   ()
 
 let tests = "(P)Map" >::: [
-  "traversal order iter vs. enum" >:: test_traversal_order;
+  "traversal order iter vs. gen" >:: test_traversal_order;
   "split" >:: test_split;
   "usual tests on Map.Make" >::: TM.tests;
   "usual tests on PMap" >::: TP.tests;

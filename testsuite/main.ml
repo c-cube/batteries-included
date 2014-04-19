@@ -18,7 +18,7 @@ let all_tests =
 (*    Test_string.tests; Moved inline to BatString *)
     Test_substring.tests;
     Test_digest.tests;
-    Test_enum.tests;
+(* Test_enum.tests;  removed *)
     Test_set.tests;
     Test_dynarray.tests;
     Test_stack.tests;

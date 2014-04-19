@@ -12,7 +12,7 @@ open OUnit
 
 module TestMappable
   (M : sig
-    include BatEnum.Enumerable
+    include BatGen.Enumerable
 
     include BatInterfaces.Mappable
     with type 'a mappable = 'a enumerable
@@ -21,18 +21,18 @@ module TestMappable
 struct
   (* The property we test is that the order in which the [map]
      function traverse the structure (applying a given function on
-     each element) is the same as the order of the [enum] function of
+     each element) is the same as the order of the [gen] function of
      the module (the order in which the elements are produced in the
-     enumeration).
+     generation).
   *)
   let test_map_evaluation_order printer t =
-    let elems_in_enum_order = BatList.of_enum (M.enum t) in
+    let elems_in_gen_order = BatList.of_gen (M.gen t) in
     let elems_in_map_order =
       let li = ref [] in
       ignore (M.map (fun x -> li := x :: !li) t);
       List.rev !li in
     assert_equal ~printer:(BatIO.to_string (BatList.print printer))
-      elems_in_enum_order
+      elems_in_gen_order
       elems_in_map_order
 end
 

@@ -55,9 +55,9 @@ module TestSet
     val iter : (elt -> unit) -> s -> unit
     val filter : (elt -> bool) -> s -> s
 
-    val enum : s -> elt BatEnum.t
-    val backwards : s -> elt BatEnum.t
-    val of_enum : elt BatEnum.t -> s
+    val gen : s -> elt BatGen.t
+    val backwards : s -> elt BatGen.t
+    val of_gen : elt BatGen.t -> s
 
     val for_all : (elt -> bool) -> s -> bool
     val exists : (elt -> bool) -> s -> bool
@@ -82,8 +82,8 @@ module TestSet
   end)
 = struct
 
-  let li t = BatList.of_enum (S.enum t)
-  let il li = S.of_enum (BatList.enum li)
+  let li t = BatList.of_gen (S.gen t)
+  let il li = S.of_gen (BatList.gen li)
 
   let eq_li ?msg cmp_elt print_elt l1 l2 =
     let cmp t1 t2 =
@@ -368,19 +368,19 @@ module TestSet
     ()
 
 (*
-  let test_enums () =
-    (* test enum, of_enum, backwards *)
-    let test_of_enum f name_f t =
-      eq ~msg:(Printf.sprintf "of_enum (%s t) = t" name_f)
+  let test_gens () =
+    (* test gen, of_gen, backwards *)
+    let test_of_gen f name_f t =
+      eq ~msg:(Printf.sprintf "of_gen (%s t) = t" name_f)
         BatInt.compare BatInt.print
-        (S.of_enum (f t)) t in
+        (S.of_gen (f t)) t in
     List.iter (fun (f, name_f) ->
-      test_of_enum f name_f (il []);
-      test_of_enum f name_f (il [(0,1); (4,5); (2, 3)]))
+      test_of_gen f name_f (il []);
+      test_of_gen f name_f (il [(0,1); (4,5); (2, 3)]))
       [
-        S.enum, "enum";
+        S.gen, "gen";
         S.backwards, "backwards";
-        BatList.enum -| S.bindings, "enum bindings";
+        BatList.gen -| S.bindings, "gen bindings";
       ]
 *)
 
@@ -444,7 +444,7 @@ module TestSet
     "test_disjoint" >:: test_disjoint;
     "test_for_all_exists" >:: test_for_all_exists;
     "test_print" >:: test_print;
-    (* "test_enums" >:: test_enums; *)
+    (* "test_gens" >:: test_gens; *)
     "test_iterators" >:: test_iterators;
     "test_pop" >:: test_pop;
   ]

@@ -201,10 +201,10 @@ let tests = "BitSet" >::: [
      let t2 = BS.of_list lst2 in
      ListInt.assert_equal
        lst1
-       (BatList.of_enum (BS.enum t1));
+       (BatList.of_gen (BS.gen t1));
      ListInt.assert_equal
        lst2
-       (BatList.of_enum (BS.enum t2)));
+       (BatList.of_gen (BS.gen t2)));
 
   "toggle" >::
   (fun () ->

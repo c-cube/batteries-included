@@ -9,10 +9,10 @@ module type Container = sig
   val fold_left : ('acc -> 'a -> 'acc) -> 'acc -> 'a t -> 'acc
   val fold_lefti : (int -> 'acc -> 'a -> 'acc) -> 'acc -> 'a t -> 'acc
   val fold_right : ('acc -> 'a -> 'acc) -> 'acc -> 'a t -> 'acc
-  val enum : 'a t -> 'a BatEnum.t
-  val backwards : 'a t -> 'a BatEnum.t
-  val of_enum : 'a BatEnum.t -> 'a t
-  val of_backwards : 'a BatEnum.t -> 'a t
+  val gen : 'a t -> 'a BatGen.t
+  val backwards : 'a t -> 'a BatGen.t
+  val of_gen : 'a BatGen.t -> 'a t
+  val of_backwards : 'a BatGen.t -> 'a t
   val length : 'a t -> int
   val iteri : (int -> 'a -> unit) -> 'a t -> unit
   val mapi : (int -> 'a -> 'b) -> 'a t -> 'b t
@@ -212,10 +212,10 @@ end
 
 module DynArrayContainerStepResizer : Container = struct
   include DynArrayContainer
-  let of_enum e = (* much simpler to see what happens when resizing code with this
+  let of_gen e = (* much simpler to see what happens when resizing code with this
                      and what happens when not resizing with the previous module
                   *)
-    let a = of_enum e in
+    let a = of_gen e in
     set_resizer a (step_resizer 1);
     a
 end
@@ -223,8 +223,8 @@ end
 module DynArrayContainerCrapResizer : Container = struct
   include DynArrayContainer
   let crap_resizer ~currslots:_ ~oldlength:_ ~newlength:_ = -1
-  let of_enum e =
-    let a = of_enum e in
+  let of_gen e =
+    let a = of_gen e in
     set_resizer a crap_resizer;
     a
 end
@@ -268,13 +268,13 @@ module DequeContainer : Container = struct
     assert_equal (to_list res1) (to_list res2);
     assert_equal (to_list res1) (to_list res3);
     res1
-  and of_enum e =
-    let orig = of_enum (BatEnum.clone e) in
-    let n = BatEnum.count e in
-    let l = BatList.of_enum e in
+  and of_gen e =
+    let e' = BatGen.persistent e in
+    let n = BatGen.Restart.length e' in
+    let l = BatList.of_gen (e' ()) in
     let l1, l2 = BatList.split_at (n / 2) l in
     let q = prepend_list l1 (append_list empty l2) in
-    assert_equal (to_list orig) (to_list q);
+    assert_equal (BatGen.to_list (e' ())) (to_list q);
     q
   and printer_delim = ("[", "]")
   and set = ni3
@@ -392,7 +392,7 @@ module VectContainer : Container = struct
       let old_v = get t i in
       try
         destructive_set t i v;
-        assert (BatEnum.equal (=) (enum t) (enum t'));
+        assert (BatGen.eq ~eq:(=) (gen t) (gen t'));
         destructive_set t i old_v;
         t'
       with Out_of_bounds -> assert false
@@ -418,15 +418,15 @@ module FunctorVectContainer : Container = struct
         a.(n - 1 - i) <- tmp;
       done
     let of_backwards e =
-      let a = of_enum e in
+      let a = of_gen e in
       rev a;
       a
     let backwards a =
       rev a;
-      let e = enum a in
-      BatEnum.force e;
+      let e = gen a in
+      let e' = BatGen.persistent e in
       rev a;
-      e
+      e' ()
     let concat = function
       | [] -> empty
       | h :: t ->
@@ -461,7 +461,7 @@ module FunctorVectContainer : Container = struct
       let old_v = get t i in
       try
         destructive_set t i v;
-        assert (BatEnum.equal (=) (enum t) (enum t'));
+        assert (BatGen.eq ~eq:(=) (gen t) (gen t'));
         destructive_set t i old_v;
         t'
       with Out_of_bounds -> assert false
@@ -511,12 +511,9 @@ module SeqContainer : Container = struct
   let map_right = ni2
   let fold_right f acc t = fold_right (fun acc elt -> f elt acc) t acc
   let backwards = ni1
-  let rec of_enum e =
-    fun () ->
-      let e = BatEnum.clone e in
-      match BatEnum.get e with
-      | None -> nil ()
-      | Some v -> Cons (v, of_enum e)
+  let of_gen e =
+    let l = BatGen.to_list e in
+    of_list l
   let of_backwards = ni1
   let mapi = ni2
   let iteri = ni2
@@ -556,22 +553,22 @@ end
 
 module BatArray = struct
   include BatArray
-  let not_countable_enum a =
-    let e = enum a in
-    BatEnum.from (fun () -> BatEnum.get_exn e)
+  let not_countable_gen a =
+    let e = gen a in
+    e
 end
 
 module TestContainer(C : Container) : sig end = struct
   let n = 500
   let a = Array.init n (fun i -> i)
   let rev_a = Array.init n (fun i -> n - 1 - i)
-  let c = C.of_enum (BatArray.enum a)
-  let rev_c = C.of_enum (BatArray.enum rev_a)
+  let c = C.of_gen (BatArray.gen a)
+  let rev_c = C.of_gen (BatArray.gen rev_a)
   let inv = C.invariants
   let () = inv c; inv rev_c
   let empty : 'a C.t Lazy.t =
     try
-      let s = C.of_enum (BatArray.enum [||]) in
+      let s = C.of_gen (BatArray.gen [||]) in
       inv s;
       (* working around a caml bug: lazy [||] segfaults *)
       Obj.magic s
@@ -737,39 +734,41 @@ module TestContainer(C : Container) : sig end = struct
 
   let () =
     repeat_twice (fun () ->
-      let e = C.enum c in
+      let e = C.gen c in
       for i = 0 to n / 2 - 1 do
-        assert (i = BatEnum.get_exn e)
+        assert (i = BatGen.get_exn e)
       done;
-      let e' = BatEnum.clone e in
-      assert_equal (BatEnum.count e) (BatEnum.count e');
+      let e' = BatGen.persistent e in
+      assert_equal (BatGen.length (e'())) (BatGen.length (e'()));
+      let e1 = BatGen.start e' and e2 = BatGen.start e' in
       for i = n / 2 to n - 1 do
-        assert (i = BatEnum.get_exn e && i = BatEnum.get_exn e')
+        assert (i = BatGen.get_exn e1 && i = BatGen.get_exn e2)
       done;
-      assert (BatEnum.is_empty e && BatEnum.is_empty e');
-      assert (BatEnum.get e = None);
-      assert (BatEnum.get e' = None)
+      assert (BatGen.is_empty e1 && BatGen.is_empty e2);
+      assert (BatGen.get e1 = None);
+      assert (BatGen.get e2 = None)
     )
 
   let () =
     repeat_twice (fun () ->
       let e = C.backwards c in
       for i = 0 to n / 2 - 1 do
-        assert (n - 1 - i = BatEnum.get_exn e)
+        assert (n - 1 - i = BatGen.get_exn e)
       done;
-      let e' = BatEnum.clone e in
-      assert (BatEnum.count e = BatEnum.count e');
+      let e' = BatGen.persistent e in
+      assert_equal (BatGen.length (e'())) (BatGen.length (e'()));
+      let e1 = BatGen.start e' and e2 = BatGen.start e' in
       for i = n / 2 to n - 1 do
-        assert (n - 1 - i = BatEnum.get_exn e && n - 1 - i = BatEnum.get_exn e')
+        assert (n - 1 - i = BatGen.get_exn e1 && n - 1 - i = BatGen.get_exn e2)
       done;
-      assert (BatEnum.is_empty e && BatEnum.is_empty e');
-      assert (BatEnum.get e = None);
-      assert (BatEnum.get e' = None)
+      assert (BatGen.is_empty e1 && BatGen.is_empty e2);
+      assert (BatGen.get e1 = None);
+      assert (BatGen.get e2 = None)
     )
 
   let () =
     repeat_twice (fun () ->
-      let c = C.of_enum (BatArray.not_countable_enum a) in
+      let c = C.of_gen (BatArray.not_countable_gen a) in
       inv c;
       repeat_twice (fun () -> assert (C.length c = n));
       repeat_twice (fun () ->
@@ -781,7 +780,7 @@ module TestContainer(C : Container) : sig end = struct
 
   let () =
     repeat_twice (fun () ->
-      let c = C.of_backwards (BatArray.enum rev_a) in
+      let c = C.of_backwards (BatArray.gen rev_a) in
       inv c;
       repeat_twice (fun () -> assert (C.length c = n));
       repeat_twice (fun () ->
@@ -793,7 +792,7 @@ module TestContainer(C : Container) : sig end = struct
 
   let () =
     repeat_twice (fun () ->
-      let c = C.of_backwards (BatArray.not_countable_enum rev_a) in
+      let c = C.of_backwards (BatArray.not_countable_gen rev_a) in
       inv c;
       repeat_twice (fun () -> assert (C.length c = n));
       repeat_twice (fun () ->
@@ -874,13 +873,13 @@ module TestContainer(C : Container) : sig end = struct
   let () =
     repeat_twice (fun () ->
       assert (C.last c = n - 1);
-      assert (try ignore (C.last (C.of_enum (BatEnum.empty ()))); false with Assert_failure _ as e -> raise e | _ -> true)
+      assert (try ignore (C.last (C.of_gen BatGen.empty)); false with Assert_failure _ as e -> raise e | _ -> true)
     )
 
   let () =
     repeat_twice (fun () ->
       assert (C.hd c = 0);
-      assert (try ignore (C.hd (C.of_enum (BatEnum.empty ()))); false with Assert_failure _ as e -> raise e | _ -> true)
+      assert (try ignore (C.hd (C.of_gen BatGen.empty)); false with Assert_failure _ as e -> raise e | _ -> true)
     )
 
   let () =
@@ -906,13 +905,13 @@ module TestContainer(C : Container) : sig end = struct
       C.iter (fun elt -> incr i; assert (elt = !i mod n)) c2;
       assert (!i = 3 * n - 1);
 
-      let c2 = C.append c (C.of_enum (BatList.enum [n; n+1])) in
+      let c2 = C.append c (C.of_gen (BatList.gen [n; n+1])) in
       inv c2;
       let i = ref (-1) in
       C.iter (fun elt -> incr i; assert (elt = !i)) c2;
       assert (!i = n + 1);
 
-      let c2 = C.append (C.of_enum (BatList.enum [-2; -1])) c in
+      let c2 = C.append (C.of_gen (BatList.gen [-2; -1])) c in
       inv c2;
       let i = ref (-3) in
       C.iter (fun elt -> incr i; assert (elt = !i)) c2;
@@ -1131,7 +1130,7 @@ module TestContainer(C : Container) : sig end = struct
       C.iter (fun elt -> incr i; assert (!i = elt)) c;
       assert (!i = n - 1);
       assert (
-        try ignore (C.tail (C.of_enum (BatEnum.empty ()))); false
+        try ignore (C.tail (C.of_gen BatGen.empty)); false
         with Assert_failure _ as e -> raise e | _ -> true
       )
     )
@@ -1145,7 +1144,7 @@ module TestContainer(C : Container) : sig end = struct
       C.iter (fun elt -> incr i; assert (!i = elt)) c;
       assert (!i = n - 2);
       assert (
-        try ignore (C.init (C.of_enum (BatEnum.empty ()))); false
+        try ignore (C.init (C.of_gen BatGen.empty)); false
         with Assert_failure _ as e -> raise e | _ -> true
       )
     )
@@ -1153,7 +1152,7 @@ module TestContainer(C : Container) : sig end = struct
   let () =
     repeat_twice (fun () ->
       let a = Array.init n (fun i -> (i, i)) in
-      let c = C.of_enum (BatArray.enum a) in
+      let c = C.of_gen (BatArray.gen a) in
       assert (C.mem c (200, 200));
 
       assert (not (C.mem c (0,1)));
@@ -1164,7 +1163,7 @@ module TestContainer(C : Container) : sig end = struct
   let () =
     repeat_twice (fun () ->
       let a = Array.init n (fun i -> ref i) in
-      let c = C.of_enum (BatArray.enum a) in
+      let c = C.of_gen (BatArray.gen a) in
       assert (C.memq c a.(200));
       assert (not (C.memq c (ref 200)));
 
@@ -1204,10 +1203,10 @@ module TestContainer(C : Container) : sig end = struct
 
   let () =
     try repeat_twice (fun () ->
-      assert_equal true (C.is_empty (C.of_enum (BatList.enum [])));
-      assert_equal false (C.is_empty (C.of_enum (BatList.enum [1])));
-      assert_equal false (C.is_empty (C.of_enum (BatList.enum [1;2])));
-      assert_equal false (C.is_empty (C.of_enum (BatList.enum [1;2;3])));
+      assert_equal true (C.is_empty (C.of_gen (BatList.gen [])));
+      assert_equal false (C.is_empty (C.of_gen (BatList.gen [1])));
+      assert_equal false (C.is_empty (C.of_gen (BatList.gen [1;2])));
+      assert_equal false (C.is_empty (C.of_gen (BatList.gen [1;2;3])));
       assert_equal false (C.is_empty c);
     ) with BatDllist.Empty -> ()
 
@@ -1215,7 +1214,7 @@ module TestContainer(C : Container) : sig end = struct
     repeat_twice (fun () ->
       let stringify l =
         try
-          let c = C.of_enum (BatList.enum l) in
+          let c = C.of_gen (BatList.gen l) in
           inv c;
           BatIO.to_string (C.print ~sep:"," ~first:"<" ~last:">" BatInt.print) c
         with BatDllist.Empty -> "<>" in

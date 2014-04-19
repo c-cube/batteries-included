@@ -5,21 +5,21 @@ open BatPervasives
 
 (**Initialize data sample*)
 let state  = BatRandom.State.make [|0|];;
-let buffer = BatArray.of_enum (BatEnum.take 60 (BatRandom.State.enum_int state 255));;
+let buffer = BatArray.of_gen (BatGen.take 60 (BatRandom.State.gen_int state 255));;
 
 (**Write sample to temporary file*)
 let write buf =
   let (out, name) = open_temporary_out ~mode:[`delete_on_exit] () in
-    BatEnum.iter (write_byte out) (BatArray.enum buf);
+    BatGen.iter (write_byte out) (BatArray.gen buf);
     close_out out;
     name
 
 (**Read from temporary file*)
 let read_regular name =
-  with_file_in name (fun inp -> BatArray.of_enum (bytes_of inp))
+  with_file_in name (fun inp -> BatArray.of_gen (bytes_of inp))
 
 let read_mmap    name =
-  with_file_in ~mode:[`mmap] name (fun inp -> BatArray.of_enum (bytes_of inp))
+  with_file_in ~mode:[`mmap] name (fun inp -> BatArray.of_gen (bytes_of inp))
 
 let temp_file ?(autoclean = true) pref suff =
   let tf = Filename.temp_file pref suff in
@@ -79,11 +79,11 @@ let test_no_append () =
   try
     let temp   = temp_file "ocaml_batteries" "noappend_test" in
     let out    = open_out temp                       in
-    let _      = BatEnum.iter (write_byte out) (BatArray.enum buffer) in
+    let _      = BatGen.iter (write_byte out) (BatArray.gen buffer) in
     let _      = close_out out                       in
     let size_1 = size_of temp                        in
     let out    = open_out temp                       in
-    let _      = BatEnum.iter (write_byte out) (BatArray.enum buffer) in
+    let _      = BatGen.iter (write_byte out) (BatArray.gen buffer) in
     let _      = close_out out                       in
     let size_2 = size_of temp                        in
       if size_1 <> size_2 then assert_failure
@@ -94,11 +94,11 @@ let test_append () =
   try
     let temp   = temp_file "ocaml_batteries" "append_test" in
     let out    = open_out ~mode:[`append] temp       in
-    let _      = BatEnum.iter (write_byte out) (BatArray.enum buffer) in
+    let _      = BatGen.iter (write_byte out) (BatArray.gen buffer) in
     let _      = close_out out                       in
     let size_1 = size_of temp                        in
     let out    = open_out ~mode:[`append] temp       in
-    let _      = BatEnum.iter (write_byte out) (BatArray.enum buffer) in
+    let _      = BatGen.iter (write_byte out) (BatArray.gen buffer) in
     let _      = close_out out                       in
     let size_2 = size_of temp                        in
       if size_2 <> 2*size_1 then assert_failure
@@ -109,18 +109,19 @@ let test_append () =
 let test_lines_of () =
   let file_lines_of fn =
     let ic = Pervasives.open_in fn in
-    BatEnum.suffix_action
+    BatGen.suffix_action
       (fun () -> Pervasives.close_in ic)
-      (BatEnum.from (fun () -> try Pervasives.input_line ic with End_of_file -> raise BatEnum.No_more_elements))
+      (fun () -> try Some (Pervasives.input_line ic) with End_of_file -> None)
   in
   try
-    let open Batteries in
+    let open Batteries in let open BatFun in
     let tf = temp_file "batteries" "test" in
-    BatFile.write_lines tf (BatList.enum [ "First" ; "Second" ]) ;
-    (file_lines_of tf
-       /@ (fun x -> String.length x, 42)
-       |> Enum.group Tuple2.first)
-    |> List.of_enum
+    BatFile.write_lines tf (BatList.gen [ "First" ; "Second" ]) ;
+    (BatGen.map
+      (fun x -> String.length x, 42)
+      (file_lines_of tf)
+       |> BatGen.group_by Tuple2.first)
+    |> List.of_gen
     |> ignore
   with Sys_error e -> assert_failure (BatPrintf.sprintf "Got Sys_error %S" e)
 

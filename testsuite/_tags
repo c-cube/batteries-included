@@ -1,1 +1,1 @@
-true: pkg_oUnit, threads, debug, pkg_batteries, pkg_batteries.full
+true: pkg_oUnit, threads, debug, pkg_batteries, pkg_batteries.full, pkg_batteries.num

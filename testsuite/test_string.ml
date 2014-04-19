@@ -3,12 +3,12 @@ open BatString
 
 let string = "Jon \"Maddog\" Orwant"
 
-open BatEnum
+open BatGen
 (*
 let test_take_and_skip () =
   let foo s : string list =
-    let e = enum s in
-      [? List : of_enum (f e) |
+    let e = gen s in
+      [? List : of_gen (f e) |
          f <- List : [take 5; skip 3 %> take 5; take 5 ; identity] ?]
   in
     assert_equal ~printer:(Printf.sprintf2 "%a" (List.print String.print_quoted))
