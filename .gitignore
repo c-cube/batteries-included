@@ -24,9 +24,11 @@ qtest.targets.log
 coverage
 setup.data
 setup.log
+setup.exe
 src/batUnix.mli
 src/batPervasives.mli
 src/batInnerPervasives.ml
+src/batInnerPervasives.mli
 src/batHashtbl.ml
 src/batMarshal.mli
 src/batPrintexc.mli
