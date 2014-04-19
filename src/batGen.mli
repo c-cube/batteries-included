@@ -116,6 +116,9 @@ module type S = sig
   val length : _ t -> int
     (** Length of an gen (linear time) *)
 
+  val count : _ t -> int
+    (** Alias to {!length} *)
+
   val map : ('a -> 'b) -> 'a t -> 'b t
     (** Lazy map. No iteration is performed now, the function will be called
         when the result is traversed. *)

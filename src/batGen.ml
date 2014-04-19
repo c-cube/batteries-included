@@ -96,6 +96,9 @@ module type S = sig
   val length : _ t -> int
     (** Length of a gen (linear time) *)
 
+  val count : _ t -> int
+    (** Alias to {!length} *)
+
   val map : ('a -> 'b) -> 'a t -> 'b t
     (** Lazy map. No iteration is performed now, the function will be called
         when the result is traversed. *)
@@ -497,6 +500,8 @@ let is_empty gen = match gen () with
 
 let length gen =
   fold (fun acc _ -> acc + 1) 0 gen
+
+let count = length
 
 (*$Q
   (Q.list Q.small_int) (fun l -> \
@@ -1605,6 +1610,7 @@ module Restart = struct
   let iteri f e = iteri f (e ())
 
   let length e = length (e ())
+  let count = length
 
   let map f e () = map f (e ())
 
