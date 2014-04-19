@@ -134,9 +134,13 @@ Library "batteries_bencode"
   BuildDepends:     batteries.core,bencode
 
 Document manual
-  Type:         custom (0.2)
-  Title:        Ocaml Batteries Documentation
-  XCustom:      make doc
+  Type:                 ocamlbuild (0.3)
+  Title:                Ocaml Batteries Documentation
+  BuildTools:           ocamldoc
+  XOCamlbuildPath:      .
+  XOCamlbuildLibraries: batteries.core,batteries.unix,batteries,
+                        batteries.bigarray,batteries.bencode,batteries.num,
+                        batteries.thread,batteries.yojson,batteries.sexp
 
 Test main
   Type:         custom (0.2)

@@ -69,6 +69,7 @@ prefilter: $(PREPROCESSED_FILES)
 
 .mlv.ml:
 	ocaml str.cma build/prefilter.ml < $^ > $@
+#require "batteries";;
 
 ###############################################################################
 #	BUILDING AND RUNNING UNIT TESTS
