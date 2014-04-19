@@ -1810,3 +1810,12 @@ let persistent gen =
   let g = 1--10 in let g' = persistent g in \
     Restart.to_list g' = [1;2;3;4;5;6;7;8;9;10]
 *)
+
+let suffix_action act gen =
+  let first = ref true in
+  fun () ->
+    match gen() with
+    | None ->
+        if !first then (first:=false; act());
+        None
+    | Some _ as res -> res

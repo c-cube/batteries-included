@@ -405,3 +405,6 @@ val print : ?first:string -> ?last:string -> ?sep:string ->
             'a BatInnerIO.output -> 'b gen -> unit
 (** Pretty-printing of a generator *)
 
+val suffix_action : (unit -> unit) -> 'a t -> 'a t
+(** Same generator, but once it's exhausted the given action will
+    be executed once *)
