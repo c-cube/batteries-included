@@ -16,10 +16,10 @@ include (Batteries :
         )
 
 module Array = struct
-  include (BatArray :
-             module type of BatArray
+  include (BatFullArray :
+             module type of BatFullArray
            with module Labels := BatArray.Labels
-            and module Cap := BatArray.Cap
+            and module Cap := BatFullArray.Cap
           )
   include BatArray.Exceptionless
   module Labels = struct
@@ -27,8 +27,8 @@ module Array = struct
     include BatArray.Labels.LExceptionless
   end
   module Cap = struct
-    include BatArray.Cap
-    include BatArray.Cap.Exceptionless
+    include BatFullArray.Cap
+    include BatFullArray.Cap.Exceptionless
   end
 end
 module Hashtbl = struct

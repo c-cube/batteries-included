@@ -21,7 +21,7 @@
  *)
 
 
-module A = struct include BatArray include BatArray.Labels end
+module A = struct include BatFullArray include BatFullArray.Labels end
 
 (* The V>=4.2 lines are not necessary for typing,
    but they are necessary for the compatibility test in batteries_compattest.ml
@@ -432,7 +432,7 @@ end
   let value_index = function
   | [|i1; i2; i3; i4; i5|] -> i1+2*(i2+3*(i3+4*(i4+5*i5)))
   | _ -> assert false in
-  let value_index2 : (int, [`Read]) BatArray.Cap.t -> int =
+  let value_index2 : (int, [`Read]) BatFullArray.Cap.t -> int =
     fun a -> value_index (Obj.magic a) in
   for i1 = 0 to 2 - 1 do
     for i2 = 0 to 3 - 1 do

@@ -514,8 +514,8 @@ struct
     rangeiter (fun e -> acc := f !acc e) 1 (length v - 1) v;
     !acc
 
-  let of_array a = of_string (STRING.of_enum (BatArray.enum a))
-  let to_array t = BatArray.of_enum (enum t)
+  let of_array a = of_string (STRING.of_enum (BatFullArray.enum a))
+  let to_array t = BatFullArray.of_enum (enum t)
   let of_container = of_string
   let to_container = to_string
   let append = append_char

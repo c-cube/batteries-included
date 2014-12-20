@@ -1,5 +1,5 @@
 
-include (BatArray : module type of BatArray with module Cap := BatArray.Cap)
+include (BatArray : module type of BatArray)
 
 type 'a enumerable = 'a t
 

@@ -30,6 +30,7 @@ type 'a t = {
 
 type 'a enumerable = 'a t
 type 'a mappable = 'a t
+type 'a generable = 'a t
 
 external enum : 'a t -> 'a t = "%identity"
 external of_enum : 'a t -> 'a t = "%identity"
@@ -1134,6 +1135,9 @@ let from_while f =
     | None   -> raise No_more_elements
     | Some x -> x )
 
+let gen t = fun () -> get t
+
+let of_gen = from_while
 
 let from_loop data next =
   let r = ref data in

@@ -24,9 +24,7 @@
    http://www.lri.fr/~filliatr/ftp/ocaml/ds/hashcons.ml
 *)
 
-module Pervasives = struct include Pervasives include BatPervasives end
 module Int = BatInt
-module Sys = BatSys
 module Hashtbl = BatHashtbl
 module Array = struct include Array include BatArray end
 

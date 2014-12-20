@@ -501,7 +501,7 @@ sig
   (** [iter f a] applies function [f] in turn to all
     the elements of [a].  *)
 
-  val iteri : ((int, [`Read]) BatArray.Cap.t -> 'a -> unit) -> ('a, 'b, 'c) t -> unit
+  val iteri : ((int, [`Read]) BatFullArray.Cap.t -> 'a -> unit) -> ('a, 'b, 'c) t -> unit
   (** Same as {!iter}, but the function is applied to the index of
       the element as the first argument, and the element itself as
       the second argument. *)
@@ -510,7 +510,7 @@ sig
   (** [modify f a] changes each element [x] in [a] to [f x]
       in-place. *)
 
-  val modifyi : ((int, [`Read]) BatArray.Cap.t -> 'a -> 'a) -> ('a, 'b, 'c) t -> unit
+  val modifyi : ((int, [`Read]) BatFullArray.Cap.t -> 'a -> 'a) -> ('a, 'b, 'c) t -> unit
   (** Same as {!modify}, but the function is applied to the index of
       the coordinates as the first argument, and the element itself
       as the second argument. *)
@@ -527,7 +527,7 @@ sig
       returned by [f]. *)
 
   val mapi :
-    ((int, [`Read]) BatArray.Cap.t -> 'a -> 'b) ->
+    ((int, [`Read]) BatFullArray.Cap.t -> 'a -> 'b) ->
     ('b, 'c) Bigarray.kind -> ('a, 'd, 'e) t -> ('b, 'c, 'e) t
     (** Same as {!map}, but the function is applied to the index of the
         coordinates as the first argument, and the element itself as the
