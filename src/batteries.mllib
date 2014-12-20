@@ -44,11 +44,11 @@ BatInnerPervasives
   BatStack
   BatStream
   BatString
-  BatSys
+  BatFullSys
   BatUnit
   BatUnix
   BatBase64
-  BatBitSet
+  BatFullBitSet
   BatCharParser
   BatConcurrent
   BatDllist
@@ -61,7 +61,7 @@ BatInnerPervasives
   BatLogger
   BatMultiPMap
   BatMultiMap
-  BatNumber
+  BatFullNumber
   BatOption
   BatOptParse
   BatOrd
