@@ -7,7 +7,6 @@
   BatComplex
   BatDeque
   BatDigest
-  BatEnum
   BatFingerTree
   BatFloat
   BatFormat
