@@ -166,7 +166,7 @@ let rec dump r =
     | x when x = Obj.final_tag ->
       opaque "final"
     | x when x = Obj.double_array_tag ->
-      BatIO.to_string (BatArray.print BatFloat.print) (Obj.magic r : float array)
+      BatIO.to_string (BatExtraArray.print BatFloat.print) (Obj.magic r : float array)
     | _ ->
       opaque (Printf.sprintf "unknown: tag %d size %d" t s)
 
@@ -181,7 +181,7 @@ let invisible_args = ref 1
    usually because program-name is put in argv.(0) *)
 
 let args () =
-  let e = BatArray.enum Sys.argv in
+  let e = BatExtraArray.enum Sys.argv in
   BatEnum.drop !invisible_args e;
   e
 
