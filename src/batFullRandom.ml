@@ -1,5 +1,5 @@
 
-open BatRandom
+include (BatRandom : module type of BatRandom with module State := BatRandom.State)
 
 let enum_bits () = BatEnum.from bits
 let enum_int bound = BatEnum.from (fun () -> int bound)
@@ -30,7 +30,7 @@ let shuffle e =
   shuffle_gen (BatEnum.gen e)
 
 module State = struct
-  open BatRandom.State
+  include BatRandom.State
 
   (**A constructor for enumerations of random numbers. *)
   let enum_bits state () = BatEnum.from (fun () -> bits state)

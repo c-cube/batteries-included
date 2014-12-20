@@ -1,5 +1,5 @@
 
-open BatArray
+include module type of BatArray with module Cap := BatArray.Cap
 
 val enum : 'a array -> 'a BatEnum.t
 (** Returns an enumeration of the elements of an array.
@@ -34,7 +34,7 @@ val print : ?first:string -> ?last:string -> ?sep:string ->
 *)
 
 module Cap : sig
-  open BatArray.Cap
+  include module type of BatArray.Cap
 
   val enum : ('a, [> `Read]) t -> 'a BatEnum.t
   val of_enum : 'a BatEnum.t -> ('a, _) t

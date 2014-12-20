@@ -1,5 +1,5 @@
 
-open BatArray
+include (BatArray : module type of BatArray with module Cap := BatArray.Cap)
 
 type 'a enumerable = 'a t
 
@@ -106,6 +106,7 @@ let print ?(first="[|") ?(last="|]") ?(sep="; ") print_a  out t =
 
 
 module Cap = struct
+  include BatArray.Cap
   let enum         = enum
   let of_enum      = of_enum
   let backwards    = backwards

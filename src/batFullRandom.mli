@@ -1,4 +1,4 @@
-open BatRandom
+include module type of BatRandom with module State := BatRandom.State
 
 (** {6 Enumerations of random values.} *)
 
@@ -42,7 +42,7 @@ val shuffle: 'a BatEnum.t -> 'a array
     less than 2{^30} elements. *)
 
 module State : sig
-  open BatRandom.State
+  include module type of BatRandom.State
 
   val enum_bits  : t -> unit    -> int BatEnum.t
   val enum_int   : t -> int     -> int BatEnum.t
