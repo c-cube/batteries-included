@@ -178,18 +178,6 @@ val popcount_sparse : int -> int
 
 val operations : int BatNumber.numeric
 
-val ( -- ) : t -> t -> t BatEnum.t
-(** Enumerate an interval.
-
-    [5 -- 10] is the enumeration 5,6,7,8,9,10.
-    [10 -- 5] is the empty enumeration*)
-
-val ( --- ) : t -> t -> t BatEnum.t
-(** Enumerate an interval.
-
-    [5 --- 10] is the enumeration 5,6,7,8,9,10.
-    [10 --- 5] is the enumeration 10,9,8,7,6,5.*)
-
 
 external of_int : int -> int = "%identity"
 external to_int : int -> int = "%identity"
@@ -200,17 +188,6 @@ module Infix : BatNumber.Infix with type bat__infix_t = t
 module Compare : BatNumber.Compare with type bat__compare_t = t
 
 (** {6 Boilerplate code}*)
-
-(** {7 Printing}*)
-
-val print: 'a BatInnerIO.output -> int -> unit
-(** prints as decimal string *)
-
-val print_hex: 'a BatInnerIO.output -> int -> unit
-(** prints as hex string *)
-
-(*    val bprint: 'a BatInnerIO.output -> t -> unit
-      (** prints as binary string *) *)
 
 (** {7 Compare} *)
 
