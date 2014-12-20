@@ -92,8 +92,6 @@ module type Infix = sig
   val ( * ) : bat__infix_t -> bat__infix_t -> bat__infix_t
   val ( / ) : bat__infix_t -> bat__infix_t -> bat__infix_t
   val ( ** ) : bat__infix_t -> bat__infix_t -> bat__infix_t
-  val ( -- ): bat__infix_t -> bat__infix_t -> bat__infix_t BatEnum.t
-  val ( --- ): bat__infix_t -> bat__infix_t -> bat__infix_t BatEnum.t
 end
 
 (**
@@ -181,8 +179,6 @@ sig
   val to_int: discrete -> int
   val succ  : discrete -> discrete
   val pred  : discrete -> discrete
-  val ( -- ): discrete -> discrete -> discrete BatEnum.t
-  val ( --- ): discrete -> discrete -> discrete BatEnum.t
 end
 
 (**/**)
